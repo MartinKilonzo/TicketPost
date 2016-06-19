@@ -6,7 +6,7 @@ class IntroductionComponent extends React.Component {
   render() {
     return (
       <div className="index">
-        <a href="#/form"><img src={yeomanImage} alt="Yeoman Generator"/></a>
+        <a href="#/fileProcessing"><img src={yeomanImage} alt="Yeoman Generator"/></a>
         <div className="notice">
           Please <code>click on the above image</code> to get started!
         </div>

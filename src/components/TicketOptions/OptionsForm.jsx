@@ -1,5 +1,6 @@
 import React from 'react';
 //TODO: SANITIZE INPUTS
+//TODO: REFACTOR COMPONENTS
 import {
   Form,
   FormControl,
@@ -97,6 +98,7 @@ class OptionsFormComponent extends React.Component {
   }
   displayTooltipMessage(event) {
     //TODO: DISPLAY TOOLTIP WARNING
+    console.debug(event.target);
     return event;
   }
   handleChange(event) {
@@ -139,25 +141,6 @@ class OptionsFormComponent extends React.Component {
       ? true
       : false;
     if (validateRedact && validateOrderNumber && validatePDF && validateText) {
-      //TODO: Reassign form values to state
-      // for (var field in this.state) {
-      //   let newVal = document.getElementById(field);
-      //   let newState;
-      //   if (field.match(/file/i)) {
-      //     if (newVal) {
-      //       newVal = event.target.files;
-      //       newState = {
-      //         [field]: newVal
-      //       };
-      //       this.setState(newState);
-      //     }
-      //   } else {
-      //     newState = {
-      //       [field]: newVal
-      //     };
-      //     this.setState(newState);
-      //   }
-      // }
       //TODO: Post form results
       this.props.saveForm(this.state);
     } else {}
