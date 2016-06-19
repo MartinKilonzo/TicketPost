@@ -21,8 +21,10 @@ class fileProcessingComponent extends React.Component {
     };
     this.saveForm = this.saveForm.bind(this);
     this.saveTicketData = this.saveTicketData.bind(this);
+    this.createTicketGroups = this.createTicketGroups.bind(this);
   }
   saveForm(data) {
+    console.debug(data);
     let newState = {
       fileText: data.fileText[0],
       filePDF: data.filePDf,
@@ -36,6 +38,7 @@ class fileProcessingComponent extends React.Component {
   }
   cleanTicketData(data) {
     data.forEach(function forEach(ticket) {
+      ticket.fileName = ticket.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + ticket.section + ' ' + ticket.row;
       ticket.date = new Date(ticket.date).toISOString();
       ticket.section = parseInt(ticket.section.match(/\d{1,3}/));
       ticket.row = parseInt(ticket.row);
@@ -51,6 +54,11 @@ class fileProcessingComponent extends React.Component {
       this.start = ticketGroup[0].seat;
       this.size = ticketGroup.length;
       this.tickets = ticketGroup;
+      this.fileName = ticketGroup[0].fileName;
+      if (this.size === 1) {
+        fileName += ' ' + this.start;
+      }
+      this.fileName +='.pdf';
     };
     let temp = [];
     let ticketPosts = [];
@@ -74,11 +82,14 @@ class fileProcessingComponent extends React.Component {
         temp = [];
       }
     }
+    this.setState({ticketPosts: ticketPosts});
+    console.debug(this.state.filePDF);
+    console.debug(this.state.tickets);
     console.debug(ticketPosts);
   }
   saveTicketData(data) {
     this.cleanTicketData(data);
-    this.setState({ticketData: data});
+    this.setState({tickets: data});
     // Reorganize the tickets into ticket groups
     this.createTicketGroups(data);
   }
