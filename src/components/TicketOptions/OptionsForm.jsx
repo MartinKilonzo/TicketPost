@@ -9,7 +9,6 @@ import {
   HelpBlock,
   InputGroup
 } from 'react-bootstrap';
-import update from 'react-addons-update';
 
 class OptionsFormComponent extends React.Component {
   constructor(props) {
@@ -17,7 +16,7 @@ class OptionsFormComponent extends React.Component {
     this.state = {
       redact: '',
       toRedact: true,
-      filePDF: [],
+      filePDF: '',
       fileText: ''
     };
     this.validateRedactionForm = this.validateRedactionForm.bind(this);
@@ -46,43 +45,45 @@ class OptionsFormComponent extends React.Component {
   }
   validateFilePDFForm() {
     // TODO: better validation for .pdfs
-    console.debug(this.state.filePDF);
+    const files = this.state.filePDF;
     // If there are no files, the form is inavalid
-    if (this.state.filePDF.length === 0) {
+    if (files.length === 0) {
       return 'error';
     }
     // Cycle through the list and check that each file is valid
-    this.state.filePDF.forEach(function forEach(file) {
+    for (var iFile = 0; iFile < files.length; iFile++) {
+      let file = files[iFile];
       // If a file exists,
       if (file) {
-        // Get the extension of the file name and check that it is a PDF
-        if (file.slice(file.length - 4) !== '.pdf') {
-          // If this is not the case, the form is invalid
-          return 'error';
-        } else {
-          // otherwise, the form is valid
+        // Check to make sure it is a PDF
+        if (file.type === 'application/pdf') {
+          // If this is the case, the form is valid
           // TODO: better validation for .pdfs
+          return 'success';
+
+        } else {// Otherwise, the form is invalid
+          return 'error';
         }
       } else { // Otherwise, no file is present so form is invalid
         return 'error';
       }
-    });
+    }
     // If all files pass, then the form is valid
     return 'success';
   }
   validateFileTextForm() {
     // TODO: better validation for .txts
-    console.debug(this.state.fileText);
+    let file = this.state.fileText[0];
     // If a file exists,
-    if (this.state.fileText) {
-      // Get the extension of the file name and check that it is a PDF
-      if (this.state.fileText.slice(this.state.fileText.length - 4) !== '.txt') {
-        // If this is not the case, the form is invalid
-        return 'error';
-      } else {
-        // otherwise, the form is valid
-        // TODO: better validation for .txts
+    if (file) {
+      // Check to make sure it is a text file
+      if (file.type === 'text/plain') {
+        // If this is the case, the form is valid
+        // TODO: better validation for .txt
         return 'success';
+
+      } else {// Otherwise, the form is invalid
+        return 'error';
       }
     } else { // Otherwise, no file is present so form is invalid
       return 'error';
@@ -90,20 +91,22 @@ class OptionsFormComponent extends React.Component {
   }
   displayTooltipMessage(event) {
     //TODO: DISPLAY TOOLTIP WARNING
+    return event;
   }
   handleChange(event) {
     const field = event.target.id;
-    const value = event.target.value;
-    // console.debug(field, value);
-    if (field === 'filePDF') {
-      if (value) {
-        let newState = update(this.state[field], {$push: [value]})
-        this.setState({[field]: newState});
+    let newVal = event.target.value;
+    let newState;
+    if (field.match(/file/i)) {
+      if (newVal) {
+        newVal = event.target.files;
+        newState = {[field]: newVal};
+        this.setState(newState);
       }
     } else {
-      this.setState({[field]: value});
+      newState = {[field]: event.target.newVal};
+      this.setState(newState);
     }
-    // console.debug(this.state[field]);
   }
   toggleChange(event) {
     const field = event.target.id;
@@ -125,11 +128,9 @@ class OptionsFormComponent extends React.Component {
       ? true
       : false;
     if (validateRedact && validateOrderNumber && validatePDF && validateText) {
-      console.info('Submitted');
       //TODO: Reassign form values to state
       //TODO: Post form results
     } else {
-      console.info('Error in Form.');
     }
   }
   render() {
@@ -156,7 +157,7 @@ class OptionsFormComponent extends React.Component {
               <b>Tickets</b>
             </Col>
             <Col sm={10}>
-              <FormControl type="file" value={form.filePDF} onChange={this.handleChange} multiple/>
+              <FormControl type="file" onChange={this.handleChange} multiple/>
               <HelpBlock>Upload Tickets as PDFs</HelpBlock>
               <FormControl.Feedback></FormControl.Feedback>
             </Col>
@@ -166,8 +167,8 @@ class OptionsFormComponent extends React.Component {
               <b>Ticket Data</b>
             </Col>
             <Col sm={10}>
-              <FormControl type="file" value={form.fileText} onChange={this.handleChange}/>
-              <HelpBlock>Upload Ticket Data as Text File</HelpBlock>
+              <FormControl type="file" onChange={this.handleChange}/>
+              <HelpBlock>Upload Ticket Data as a Text File</HelpBlock>
               <FormControl.Feedback></FormControl.Feedback>
             </Col>
           </FormGroup>
