@@ -124,7 +124,8 @@ class OptionsFormComponent extends React.Component {
       [field]: !this.state[field]
     });
   }
-  submitForm() {
+  submitForm(event) {
+    event.preventDefault();
     var validateRedact = this.validateRedactionForm() === 'success'
       ? true
       : false;
@@ -139,24 +140,24 @@ class OptionsFormComponent extends React.Component {
       : false;
     if (validateRedact && validateOrderNumber && validatePDF && validateText) {
       //TODO: Reassign form values to state
-      for (var field in this.state) {
-        let newVal = document.getElementById(field);
-        let newState;
-        if (field.match(/file/i)) {
-          if (newVal) {
-            newVal = event.target.files;
-            newState = {
-              [field]: newVal
-            };
-            this.setState(newState);
-          }
-        } else {
-          newState = {
-            [field]: newVal
-          };
-          this.setState(newState);
-        }
-      }
+      // for (var field in this.state) {
+      //   let newVal = document.getElementById(field);
+      //   let newState;
+      //   if (field.match(/file/i)) {
+      //     if (newVal) {
+      //       newVal = event.target.files;
+      //       newState = {
+      //         [field]: newVal
+      //       };
+      //       this.setState(newState);
+      //     }
+      //   } else {
+      //     newState = {
+      //       [field]: newVal
+      //     };
+      //     this.setState(newState);
+      //   }
+      // }
       //TODO: Post form results
       this.props.saveForm(this.state);
     } else {}
@@ -180,7 +181,7 @@ class OptionsFormComponent extends React.Component {
               </InputGroup>
             </Col>
           </FormGroup>
-          <FormGroup controlId="filePDF" validationState={this.validateFilePDFForm()}>
+          <FormGroup controlId="filePDF" accept="application/pdf" validationState={this.validateFilePDFForm()}>
             <Col sm={2} className="formLabel">
               <b>Tickets</b>
             </Col>
@@ -190,7 +191,7 @@ class OptionsFormComponent extends React.Component {
               <FormControl.Feedback></FormControl.Feedback>
             </Col>
           </FormGroup>
-          <FormGroup controlId="fileText" validationState={this.validateFileTextForm()}>
+          <FormGroup controlId="fileText" accept="text/plain" validationState={this.validateFileTextForm()}>
             <Col sm={2} className="formLabel">
               <b>Ticket Data</b>
             </Col>

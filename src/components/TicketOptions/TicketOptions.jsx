@@ -13,9 +13,26 @@ class TicketOptions extends React.Component {
   }
   saveForm(data) {
     const newState = Update(this.state, {
-      inData: {$set: data}
+      inData: {
+        $set: data
+      }
     });
     this.setState(newState);
+    this.readFile(data.fileText[0]);
+  }
+  readFile(file) {
+    console.debug(file);
+    if (FileReader) {
+      var reader = new FileReader();
+      reader.onload = function(event) {
+        console.debug('Got the File:\n' +
+          'File: ' + file.name + '\n' + 'Date: ' + file.lastModifiedDate + '\n' + 'Type: ' + file.type + '\n' + 'Size: ' + file.size / 1000 + 'kb\n' + 'Contents: ' + event.target.result + '\n');
+      }
+      reader.readAsText(file);
+    } else {
+      alert('Broweser too old!')
+    }
+
   }
   render() {
     return (
