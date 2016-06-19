@@ -14,10 +14,10 @@ class OptionsFormComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      redact: '',
-      toRedact: true,
-      filePDF: '',
-      fileText: ''
+      redact: props.redact,
+      toRedact: props.toRedact,
+      filePDF: props.filePDF,
+      fileText: props.fileText
     };
     this.validateRedactionForm = this.validateRedactionForm.bind(this);
     this.validateFilePDFForm = this.validateFilePDFForm.bind(this);
@@ -27,15 +27,17 @@ class OptionsFormComponent extends React.Component {
     this.submitForm = this.submitForm.bind(this);
   }
   validateRedactionForm() {
+    // If checked,
     if (this.state.toRedact) {
+      // If there is no text, warn the user
       if (!this.state.redact) {
         return 'warning';
       } else { // Elseif cases here can be used for 'error' flags for more advanced validation
         return 'success';
       }
-    } else if (this.state.redact) {
+    } else if (this.state.redact) { // If not checked and there is text
       return 'warning';
-    } else {
+    } else { // If unchecked and no text
       return 'success';
     }
   }
@@ -47,7 +49,7 @@ class OptionsFormComponent extends React.Component {
     // TODO: better validation for .pdfs
     const files = this.state.filePDF;
     // If there are no files, the form is inavalid
-    if (files.length === 0) {
+    if (!this.state.filePDF) {
       return 'error';
     }
     // Cycle through the list and check that each file is valid
@@ -61,7 +63,7 @@ class OptionsFormComponent extends React.Component {
           // TODO: better validation for .pdfs
           return 'success';
 
-        } else {// Otherwise, the form is invalid
+        } else { // Otherwise, the form is invalid
           return 'error';
         }
       } else { // Otherwise, no file is present so form is invalid
@@ -73,6 +75,10 @@ class OptionsFormComponent extends React.Component {
   }
   validateFileTextForm() {
     // TODO: better validation for .txts
+    // If there is no file, the form is inavalid
+    if (!this.state.fileText) {
+      return 'error';
+    }
     let file = this.state.fileText[0];
     // If a file exists,
     if (file) {
@@ -82,7 +88,7 @@ class OptionsFormComponent extends React.Component {
         // TODO: better validation for .txt
         return 'success';
 
-      } else {// Otherwise, the form is invalid
+      } else { // Otherwise, the form is invalid
         return 'error';
       }
     } else { // Otherwise, no file is present so form is invalid
@@ -100,11 +106,15 @@ class OptionsFormComponent extends React.Component {
     if (field.match(/file/i)) {
       if (newVal) {
         newVal = event.target.files;
-        newState = {[field]: newVal};
+        newState = {
+          [field]: newVal
+        };
         this.setState(newState);
       }
     } else {
-      newState = {[field]: event.target.newVal};
+      newState = {
+        [field]: newVal
+      };
       this.setState(newState);
     }
   }
@@ -129,9 +139,27 @@ class OptionsFormComponent extends React.Component {
       : false;
     if (validateRedact && validateOrderNumber && validatePDF && validateText) {
       //TODO: Reassign form values to state
+      for (var field in this.state) {
+        let newVal = document.getElementById(field);
+        let newState;
+        if (field.match(/file/i)) {
+          if (newVal) {
+            newVal = event.target.files;
+            newState = {
+              [field]: newVal
+            };
+            this.setState(newState);
+          }
+        } else {
+          newState = {
+            [field]: newVal
+          };
+          this.setState(newState);
+        }
+      }
       //TODO: Post form results
-    } else {
-    }
+      this.props.saveForm(this.state);
+    } else {}
   }
   render() {
     let form = this.state;
@@ -145,7 +173,7 @@ class OptionsFormComponent extends React.Component {
             <Col sm={10}>
               <InputGroup>
                 <InputGroup.Addon>
-                  <input id="toRedact" type="checkbox" onChange={this.toggleChange} defaultChecked/>
+                  <input id="toRedact" type="checkbox" onChange={this.toggleChange} checked={form.toRedact}/>
                 </InputGroup.Addon>
                 <FormControl type="text" placeholder="Text to Redact" value={form.redact} onChange={this.handleChange}/>
                 <FormControl.Feedback></FormControl.Feedback>
@@ -185,6 +213,11 @@ class OptionsFormComponent extends React.Component {
   }
 }
 
-OptionsFormComponent.defaultProps = {};
+OptionsFormComponent.defaultProps = {
+  redact: undefined,
+  toRedact: true,
+  filePDF: undefined,
+  fileText: undefined
+};
 
 export default OptionsFormComponent;
