@@ -26,7 +26,7 @@ class fileProcessingComponent extends React.Component {
   saveForm(data) {
     let newState = {
       fileText: data.fileText[0],
-      filePDF: data.filePDf,
+      filePDF: data.filePDF,
       toRedact: data.toRedact,
       redact: data.redact,
       toRedactOrderNumber: data.toRedactOrderNumber
@@ -46,6 +46,7 @@ class fileProcessingComponent extends React.Component {
     });
   }
   createTicketGroups(data) {
+    let files = this.state.filePDF;
     let TicketPost = function TicketPost(ticketGroup) {
       this.date = ticketGroup[0].date;
       this.section = ticketGroup[0].section;
@@ -58,6 +59,15 @@ class fileProcessingComponent extends React.Component {
         fileName += ' ' + this.start;
       }
       this.fileName +='.pdf';
+      for (let iFile = 0; iFile < files.length; iFile++) {
+        let file = files[iFile];
+        if (this.fileName === file.name) {
+          this.file = file;
+        }
+      }
+      if (!this.file) {
+        alert('Error matching ' + this.fileName + ' to a given PDF file\nPlease check that all files have are correct.');
+      }
     };
     let temp = [];
     let ticketPosts = [];
@@ -81,10 +91,11 @@ class fileProcessingComponent extends React.Component {
       }
     }
     this.setState({ticketPosts: ticketPosts});
+    console.debug(ticketPosts);
   }
   saveTicketData(data) {
     this.cleanTicketData(data);
-    this.setState({tickets: data});
+    // this.setState({tickets: data});
     // Reorganize the tickets into ticket groups
     this.createTicketGroups(data);
   }
