@@ -24,7 +24,6 @@ class fileProcessingComponent extends React.Component {
     this.createTicketGroups = this.createTicketGroups.bind(this);
   }
   saveForm(data) {
-    console.debug(data);
     let newState = {
       fileText: data.fileText[0],
       filePDF: data.filePDf,
@@ -62,7 +61,6 @@ class fileProcessingComponent extends React.Component {
     };
     let temp = [];
     let ticketPosts = [];
-    console.debug(data);
     for (var iTicket = 0; iTicket < data.length - 1; iTicket++) {
       let ticket = data[iTicket];
       let nextTicket = data[iTicket + 1];
@@ -83,9 +81,6 @@ class fileProcessingComponent extends React.Component {
       }
     }
     this.setState({ticketPosts: ticketPosts});
-    console.debug(this.state.filePDF);
-    console.debug(this.state.tickets);
-    console.debug(ticketPosts);
   }
   saveTicketData(data) {
     this.cleanTicketData(data);
