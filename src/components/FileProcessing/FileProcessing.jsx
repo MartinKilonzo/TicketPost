@@ -2,6 +2,8 @@ import React from 'react';
 
 import TicketOptions from '../TicketOptions/TicketOptions.jsx'
 import TextFileProcessing from '../../actions/FileProcessingActions/TextFileProcessing.jsx';
+import ListTicketPosts from '../Tickets/ListTicketPosts.jsx';
+import {EventQuery} from '../TicketUtils/TicketUtils.jsx';
 
 // TODO: Loading bar
 // TODO: Status report
@@ -17,7 +19,8 @@ class fileProcessingComponent extends React.Component {
       redact: props.redact,
       toRedactOrderNumber: props.toRedactOrderNumber,
       showForm: props.showForm,
-      showFileProcessing: props.showFileProcessing
+      showFileProcessing: props.showFileProcessing,
+      ticketPosts: props.ticketPosts
     };
     this.saveForm = this.saveForm.bind(this);
     this.saveTicketData = this.saveTicketData.bind(this);
@@ -39,7 +42,7 @@ class fileProcessingComponent extends React.Component {
     data.forEach(function forEach(ticket) {
       ticket.fileName = ticket.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + ticket.section + ' ' + ticket.row;
       ticket.date = new Date(ticket.date).toISOString();
-      ticket.section = parseInt(ticket.section.match(/\d{1,3}/));
+      ticket.section = parseInt(ticket.section);
       ticket.row = parseInt(ticket.row);
       ticket.seat = parseInt(ticket.seat);
       ticket.serial = parseInt(ticket.serial.replace(/\s/g, ''));
@@ -52,13 +55,13 @@ class fileProcessingComponent extends React.Component {
       this.section = ticketGroup[0].section;
       this.row = ticketGroup[0].row;
       this.start = ticketGroup[0].seat;
-      this.size = ticketGroup.length;
+      this.count = ticketGroup.length;
       this.tickets = ticketGroup;
       this.fileName = ticketGroup[0].fileName;
-      if (this.size === 1) {
-        fileName += ' ' + this.start;
+      if (this.count === 1) {
+        this.fileName += ' ' + this.start;
       }
-      this.fileName +='.pdf';
+      this.fileName += '.pdf';
       for (let iFile = 0; iFile < files.length; iFile++) {
         let file = files[iFile];
         if (this.fileName === file.name) {
@@ -68,6 +71,12 @@ class fileProcessingComponent extends React.Component {
       if (!this.file) {
         alert('Error matching ' + this.fileName + ' to a given PDF file\nPlease check that all files have are correct.');
       }
+      this.venue = {
+        name: 'Rogers Centre',
+        country: 'CA',
+        state: 'ON',
+        city: 'Toronto'
+      };
     };
     let temp = [];
     let ticketPosts = [];
@@ -90,8 +99,27 @@ class fileProcessingComponent extends React.Component {
         temp = [];
       }
     }
-    this.setState({ticketPosts: ticketPosts});
+    ticketPosts.forEach(function getEvent(ticketPost) {
+      let eventQuery = new EventQuery(ticketPost.date, ticketPost.venue);
+      let loadEvents = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          const response = JSON.parse(this.responseText).Items[0];
+          ticketPost.event = response.EventId;
+          ticketPost.eventName = response.Name;
+        }
+      };
+      let httpEvent = new XMLHttpRequest();
+      httpEvent.onreadystatechange = loadEvents;
+      httpEvent.open('GET', eventQuery.uri, false);
+      httpEvent.setRequestHeader('Accept', 'application/json');
+      httpEvent.setRequestHeader('Content-Type', 'text/plain');
+      httpEvent.setRequestHeader('X-Signature', eventQuery.signature);
+      httpEvent.setRequestHeader('X-Token', eventQuery.token);
+      httpEvent.setRequestHeader('X-API-Version', eventQuery.version);
+      httpEvent.send();
+    });
     console.debug(ticketPosts);
+    this.setState({ticketPosts: ticketPosts});
   }
   saveTicketData(data) {
     this.cleanTicketData(data);
@@ -99,11 +127,26 @@ class fileProcessingComponent extends React.Component {
     // Reorganize the tickets into ticket groups
     this.createTicketGroups(data);
   }
+  modifyTicketPost(newTicketPost) {
+    //TODO: PLACEHOLDER - Modify tickets
+    console.debug('Modified: ', newTicketPost);
+  }
+  postTicket(ticket) {
+    //TODO: PLACEHOLDER - Post ticket
+    console.debug('Posting: ', ticket);
+  }
+  postAllTickets() {
+    this.state.ticketPost.forEach(function forEach(ticket) {
+      this.postTicket(ticket);
+    });
+  }
   render() {
+    let ticketPosts = this.state.ticketPosts;
     return (
       <div>
         {this.state.showForm && <TicketOptions saveForm={this.saveForm}></TicketOptions>}
         {this.state.showFileProcessing && <TextFileProcessing file={this.state.fileText} saveTicketData={this.saveTicketData}></TextFileProcessing>}
+        <ListTicketPosts ticketPosts={ticketPosts} modifyTicketPost={this.modifyTicketPost}></ListTicketPosts>
       </div>
     );
   }
@@ -111,7 +154,8 @@ class fileProcessingComponent extends React.Component {
 
 fileProcessingComponent.defaultProps = {
   showForm: true,
-  showFileProcessing: false
+  showFileProcessing: false,
+  ticketPosts: []
 };
 
 export default fileProcessingComponent;

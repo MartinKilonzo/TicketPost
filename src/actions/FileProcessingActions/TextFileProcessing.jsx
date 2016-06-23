@@ -63,14 +63,26 @@ class TextFileProcessingComponent extends React.Component {
     }
   }
   render() {
+    let buttonStyle = {
+      position: 'relative',
+      height: 'auto',
+      width: '100%',
+      margin: 'auto',
+      paddingBottom: '15px',
+      display: 'block'
+    }
     return (
-      <div className="index">
-        <div className="notice">
-          <h2>File Processing</h2>
+      <div>
+        <div className="index">
+          <div className="notice">
+            <h2>File Processing</h2>
+          </div>
         </div>
-        <Col sm={2} smOffset={5}>
-          <Button bsStyle="default" bsSize="large" onClick={this.parseTextFile} block>Process File</Button>
-        </Col>
+        <div className="container" style={buttonStyle}>
+          <Col xs={2} smOffset={5}>
+            <Button bsStyle="default" bsSize="large" onClick={this.parseTextFile} block>Process File</Button>
+          </Col>
+        </div>
       </div>
     );
   }
