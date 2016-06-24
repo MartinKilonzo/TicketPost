@@ -1,5 +1,5 @@
 import TicketUtils from './TicketUtils.jsx';
-
+//TODO: move xhr into query files
 let EventQuery = function EventQuery(date, venue) {
   this.Page = 1;
   this.ItemsPerPage = 100;

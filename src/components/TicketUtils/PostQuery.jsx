@@ -1,5 +1,5 @@
 import TicketUtils from './TicketUtils.jsx';
-
+//TODO: move xhr into query files
 let Ticket = function Ticket(ticketPost) {
   this.Event = ticketPost.event.Name;
   this.EventDate = ticketPost.event.Date;
@@ -94,7 +94,7 @@ let addVendorData = function addVendorData(TicketInventory, ticketPost) {
         Currency: 'USD' // 3-Letter Currency Code
       },
       PaymentDate: ticketPost.date, // Date of payment
-      PaymentMode: 255, // Method of Payment: PayPal = 1, eCheck = 2, Check = 3, MoneyOrder = 4, Card = 5, Cash = 6, Credit = 7, COD = 8, BankTransfer = 9, DebitCard=10, Other = 255
+      PaymentMode: 3, // Method of Payment: PayPal = 1, eCheck = 2, Check = 3, MoneyOrder = 4, Card = 5, Cash = 6, Credit = 7, COD = 8, BankTransfer = 9, DebitCard=10, Other = 255
       PayPalEmail: '', // PayPal Email if PaymentMode = 1
       PayPalTransactionId: '', // PayPal Transactin Number if PaymentMode = 1
       Card: {
@@ -106,7 +106,7 @@ let addVendorData = function addVendorData(TicketInventory, ticketPost) {
       },
       BankName: '', // Bank Name Required if the Payment Mode is BankTransfer (9)
       AccountNumber: 0, // Bank Account Number.Required if the Payment Mode is BankTransfer (9)
-      Description: 'Payment by cheque', // Payment Description Required if the Payment Mode is other (0)
+      Description: '', // Payment Description Required if the Payment Mode is other (0)
       Note: '', // Notes for payment
       ReferenceNo: '' // Reference number for payment
     }

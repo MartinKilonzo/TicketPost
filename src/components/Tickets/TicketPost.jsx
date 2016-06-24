@@ -33,18 +33,15 @@ class TicketPostComponent extends React.Component {
   postTickets() {
     let postQuery = new PostQuery(this.state);
     const state = this;
-    const callback = this.uploadTickets;
     let getResponse = function() {
       if (this.readyState == 4 && this.status == 200) {
         const response = JSON.parse(this.responseText);
         if (response.Status === 'Failure') {
           console.error(response.Messages[0].Description);
           //TODO: Alert user that upload failed
-        }
-        else {
-          console.debug(response);
-          console.debug(response.Data.Items[0][0].POItemId);
-          state.setState({ItemId: response.Data.Items[0][0].POItemId});
+        } else {
+          state.setState({itemId: response.Data.Items[0][0].POItemId
+          });
           state.uploadTickets(); //TODO: CHECK IF THIS WORKS
         }
       }
@@ -59,8 +56,9 @@ class TicketPostComponent extends React.Component {
     httpPost.send(JSON.stringify(postQuery.query));
   }
   uploadTickets() {
-    let fileQuery = new FileQuery(this.state);
-    let httpFile = new XMLHttpRequest();
+    const ticketPost = this.state;
+    let fileQuery = new FileQuery(ticketPost);
+    let fileLoadsRemaining = ticketPost.count;
     let getResponse = function() {
       if (this.readyState == 4 && this.status == 200) {
         const response = JSON.parse(this.responseText);
@@ -71,13 +69,26 @@ class TicketPostComponent extends React.Component {
         //TODO: Alert user that upload succeeded
       }
     };
-    httpFile.onreadystatechange = getResponse;
-    httpFile.open('POST', fileQuery.uri, true);
-    httpFile.setRequestHeader('Content-Type', 'application/json');
-    httpFile.setRequestHeader('X-Signature', fileQuery.signature);
-    httpFile.setRequestHeader('X-Token', fileQuery.token);
-    httpFile.setRequestHeader('X-API-Version', fileQuery.version);
-    httpFile.send(JSON.stringify(fileQuery.query));
+    ticketPost.tickets.forEach(function loadFile(ticket) {
+      let fileReader = new FileReader();
+      fileReader.onload = function() {
+        const file = event.target.result.slice('data:application/pdf;base64,'.length);
+        fileQuery.addFile(ticket.seat, file);
+        console.debug(ticket.file.name);
+        fileLoadsRemaining--;
+        if (fileLoadsRemaining <= 0) {
+          let httpFile = new XMLHttpRequest();
+          httpFile.onreadystatechange = getResponse;
+          httpFile.open('POST', fileQuery.uri, true);
+          httpFile.setRequestHeader('Content-Type', 'application/json');
+          httpFile.setRequestHeader('X-Signature', fileQuery.signature);
+          httpFile.setRequestHeader('X-Token', fileQuery.token);
+          httpFile.setRequestHeader('X-API-Version', fileQuery.version);
+          httpFile.send(JSON.stringify(fileQuery.query));
+        }
+      };
+      fileReader.readAsDataURL(ticket.file);
+    });
   }
   saveChanges(newTicketPost) {
     this.props.saveChanges(this.props.ticketPost, newTicketPost);
@@ -110,6 +121,7 @@ class TicketPostComponent extends React.Component {
           </div>}
         </Button>
         <Button bsStyle="success" onClick={this.postTickets} block>Post Set</Button>
+        <Button bsStyle="success" onClick={this.uploadTickets} block>Upload Set</Button>
       </div>
     );
   }

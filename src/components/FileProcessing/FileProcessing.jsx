@@ -24,6 +24,7 @@ class fileProcessingComponent extends React.Component {
     };
     this.saveForm = this.saveForm.bind(this);
     this.saveTicketData = this.saveTicketData.bind(this);
+    this.cleanTicketData = ths.cleanTicketData.bind(this);
     this.createTicketGroups = this.createTicketGroups.bind(this);
   }
   saveForm(data) {
@@ -38,9 +39,19 @@ class fileProcessingComponent extends React.Component {
     this.state.showForm = false;
     this.state.showFileProcessing = true;
   }
-  cleanTicketData(data) {
+  cleanTicketData(data) { //TODO: Add getter and setters for each field...
+    let files = this.state.filePDF;
     data.forEach(function forEach(ticket) {
-      ticket.fileName = ticket.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + ticket.section + ' ' + ticket.row;
+      ticket.fileName = ticket.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + ticket.section + ' ' + ticket.row + ' ' + ticket.seat + '.pdf';
+      for (let iFile = 0; iFile < files.length; iFile++) {
+        let file = files[iFile];
+        if (ticket.fileName === file.name) {
+          ticket.file = file;
+        }
+      }
+      if (!ticket.file) {
+        console.error('Error matching ' + ticket.fileName + ' to a given PDF file\nPlease check that all files have are correct.');
+      }
       ticket.date = new Date(ticket.date).toISOString();
       ticket.sectionNUmber = parseInt(ticket.section);
       ticket.section = ticket.section;
@@ -50,7 +61,6 @@ class fileProcessingComponent extends React.Component {
     });
   }
   createTicketGroups(data) {
-    let files = this.state.filePDF;
     // Add loaded information
     let TicketPost = function TicketPost(ticketGroup) {
       this.date = ticketGroup[0].date;
@@ -59,20 +69,6 @@ class fileProcessingComponent extends React.Component {
       this.start = ticketGroup[0].seat;
       this.count = ticketGroup.length;
       this.tickets = ticketGroup;
-      this.fileName = ticketGroup[0].fileName;
-      if (this.count === 1) {
-        this.fileName += ' ' + this.start;
-      }
-      this.fileName += '.pdf';
-      for (let iFile = 0; iFile < files.length; iFile++) {
-        let file = files[iFile];
-        if (this.fileName === file.name) {
-          this.file = file;
-        }
-      }
-      if (!this.file) {
-        alert('Error matching ' + this.fileName + ' to a given PDF file\nPlease check that all files have are correct.');
-      }
       this.venue = {
         name: 'Rogers Centre',
         country: 'CA',
@@ -110,7 +106,6 @@ class fileProcessingComponent extends React.Component {
         if (this.readyState == 4 && this.status == 200) {
           const response = JSON.parse(this.responseText).Items[0];
           ticketPost.event = response;
-          console.debug(response);
         }
       };
       let httpEvent = new XMLHttpRequest();

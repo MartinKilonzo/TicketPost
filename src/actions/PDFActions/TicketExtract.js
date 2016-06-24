@@ -522,23 +522,16 @@ if (PAGES >= 1 || getPageNumWords(0) > 0) {
     ticketData.addData('date', page);
     ticketData.addData('serial', page);
     // Check to see if this page marks the end of a ticket group
-    if (ticketData.isNewTicketGroup(page)) {
+    //if (ticketData.isNewTicketGroup(page)) {
       // Extract the page and retrieve the text to use for the file name
-      var data = ticketData.getData(page - 1);
+      var data = ticketData.getData(page);
       var directory = '../To Post/';
       var fileName = data.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + data.section + ' ' + data.row;
-      if (grpStart === page) {
         fileName += ' ' + data.seat;
-      }
       fileName += '.pdf';
-      var nEnd = page - 1;
-      if (page === ticketData.pages - 1) {
-        nEnd++;
-      }
       try {
         extractPages({
-          nStart: grpStart,
-          nEnd: nEnd,
+          nStart: page,
           cPath: directory + fileName
         });
       } catch (e) {
@@ -546,7 +539,7 @@ if (PAGES >= 1 || getPageNumWords(0) > 0) {
       } finally {
         grpStart = page;
       }
-    }
+    //}
   }
   ticketData.exportDataAsText();
 }
