@@ -30,4 +30,4 @@ node_modules
 bower_components/
 
 #API Data
-src/components/TicketUtils
+src/components/TicketUtils/TicketUtils.jsx

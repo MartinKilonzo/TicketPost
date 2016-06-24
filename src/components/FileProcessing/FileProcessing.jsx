@@ -3,7 +3,7 @@ import React from 'react';
 import TicketOptions from '../TicketOptions/TicketOptions.jsx'
 import TextFileProcessing from '../../actions/FileProcessingActions/TextFileProcessing.jsx';
 import ListTicketPosts from '../Tickets/ListTicketPosts.jsx';
-import {EventQuery} from '../TicketUtils/TicketUtils.jsx';
+import EventQuery from '../TicketUtils/EventQuery.jsx';
 
 // TODO: Loading bar
 // TODO: Status report
@@ -42,7 +42,8 @@ class fileProcessingComponent extends React.Component {
     data.forEach(function forEach(ticket) {
       ticket.fileName = ticket.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + ticket.section + ' ' + ticket.row;
       ticket.date = new Date(ticket.date).toISOString();
-      ticket.section = parseInt(ticket.section);
+      ticket.sectionNUmber = parseInt(ticket.section);
+      ticket.section = ticket.section;
       ticket.row = parseInt(ticket.row);
       ticket.seat = parseInt(ticket.seat);
       ticket.serial = parseInt(ticket.serial.replace(/\s/g, ''));
@@ -50,6 +51,7 @@ class fileProcessingComponent extends React.Component {
   }
   createTicketGroups(data) {
     let files = this.state.filePDF;
+    // Add loaded information
     let TicketPost = function TicketPost(ticketGroup) {
       this.date = ticketGroup[0].date;
       this.section = ticketGroup[0].section;
@@ -78,6 +80,7 @@ class fileProcessingComponent extends React.Component {
         city: 'Toronto'
       };
     };
+    // Group the tickets
     let temp = [];
     let ticketPosts = [];
     for (var iTicket = 0; iTicket < data.length - 1; iTicket++) {
@@ -91,7 +94,7 @@ class fileProcessingComponent extends React.Component {
       } else if (ticket.date !== nextTicket.date) {
         ticketPosts.push(new TicketPost(temp));
         temp = [];
-      } else if (ticket.section !== nextTicket.section) {
+      } else if (ticket.sectionNumber !== nextTicket.sectionNumber) {
         ticketPosts.push(new TicketPost(temp));
         temp = [];
       } else if (ticket.row !== nextTicket.row) {
@@ -99,13 +102,15 @@ class fileProcessingComponent extends React.Component {
         temp = [];
       }
     }
+    //Query the API for event data
+    // TODO: Refactor into seperate function, passed via props into TicketPost to allow for refreshed data
     ticketPosts.forEach(function getEvent(ticketPost) {
       let eventQuery = new EventQuery(ticketPost.date, ticketPost.venue);
       let loadEvents = function() {
         if (this.readyState == 4 && this.status == 200) {
           const response = JSON.parse(this.responseText).Items[0];
-          ticketPost.event = response.EventId;
-          ticketPost.eventName = response.Name;
+          ticketPost.event = response;
+          console.debug(response);
         }
       };
       let httpEvent = new XMLHttpRequest();

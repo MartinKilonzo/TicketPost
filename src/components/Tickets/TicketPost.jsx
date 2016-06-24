@@ -1,16 +1,15 @@
 import React from 'react';
+import {Button} from 'react-bootstrap';
 
 import Date from './Date.jsx';
-import {PostQuery} from '../TicketUtils/TicketUtils.jsx';
-
-import {Button} from 'react-bootstrap';
+import PostQuery from '../TicketUtils/PostQuery.jsx';
+import FileQuery from '../TicketUtils/FileQuery.jsx';
 
 class TicketPostComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       event: props.data.event,
-      eventName: props.data.eventName,
       date: props.data.date,
       section: props.data.section,
       row: props.data.row,
@@ -23,6 +22,8 @@ class TicketPostComponent extends React.Component {
     };
     this.changeView = this.changeView.bind(this);
     this.saveChanges = this.saveChanges.bind(this);
+    this.postTickets = this.postTickets.bind(this);
+    this.uploadTickets = this.uploadTickets.bind(this);
   }
   changeView() {
     this.setState({
@@ -30,22 +31,53 @@ class TicketPostComponent extends React.Component {
     });
   }
   postTickets() {
-    console.debug('Posting:', this.state);
     let postQuery = new PostQuery(this.state);
-    let httpEvent = new XMLHttpRequest();
-    httpEvent.onreadystatechange = function() {
+    const state = this;
+    const callback = this.uploadTickets;
+    let getResponse = function() {
       if (this.readyState == 4 && this.status == 200) {
-        const response = JSON.parse(this.responseText).Items[0];
-        console.debug(response);
+        const response = JSON.parse(this.responseText);
+        if (response.Status === 'Failure') {
+          console.error(response.Messages[0].Description);
+          //TODO: Alert user that upload failed
+        }
+        else {
+          console.debug(response);
+          console.debug(response.Data.Items[0][0].POItemId);
+          state.setState({ItemId: response.Data.Items[0][0].POItemId});
+          state.uploadTickets(); //TODO: CHECK IF THIS WORKS
+        }
       }
     };
-    httpEvent.open('POST', postQuery.uri, true);
-    httpEvent.setRequestHeader('Accept', 'application/json');
-    httpEvent.setRequestHeader('Content-Type', 'text/plain');
-    httpEvent.setRequestHeader('X-Signature', postQuery.signature);
-    httpEvent.setRequestHeader('X-Token', postQuery.token);
-    httpEvent.setRequestHeader('X-API-Version', postQuery.version);
-    httpEvent.send();
+    let httpPost = new XMLHttpRequest();
+    httpPost.onreadystatechange = getResponse;
+    httpPost.open('POST', postQuery.uri, true);
+    httpPost.setRequestHeader('Content-Type', 'application/json');
+    httpPost.setRequestHeader('X-Signature', postQuery.signature);
+    httpPost.setRequestHeader('X-Token', postQuery.token);
+    httpPost.setRequestHeader('X-API-Version', postQuery.version);
+    httpPost.send(JSON.stringify(postQuery.query));
+  }
+  uploadTickets() {
+    let fileQuery = new FileQuery(this.state);
+    let httpFile = new XMLHttpRequest();
+    let getResponse = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        const response = JSON.parse(this.responseText);
+        if (response.Status === 'Failure') {
+          console.error(response.Messages[0].Description);
+          //TODO: Alert user that upload failed
+        }
+        //TODO: Alert user that upload succeeded
+      }
+    };
+    httpFile.onreadystatechange = getResponse;
+    httpFile.open('POST', fileQuery.uri, true);
+    httpFile.setRequestHeader('Content-Type', 'application/json');
+    httpFile.setRequestHeader('X-Signature', fileQuery.signature);
+    httpFile.setRequestHeader('X-Token', fileQuery.token);
+    httpFile.setRequestHeader('X-API-Version', fileQuery.version);
+    httpFile.send(JSON.stringify(fileQuery.query));
   }
   saveChanges(newTicketPost) {
     this.props.saveChanges(this.props.ticketPost, newTicketPost);
@@ -59,6 +91,7 @@ class TicketPostComponent extends React.Component {
     for (var i = 1; i < ticketPost.count; i++) {
       tickets += ', ' + (ticketPost.start + i);
     }
+    //TODO: Add another button for refreshing event data if fail, and use as alternate to current
     return (
       <div>
         <Button bsStyle="default" onClick={this.changeView} block>
@@ -70,8 +103,8 @@ class TicketPostComponent extends React.Component {
             Count: {ticketPost.count}<br/>
           </div>}
           {this.state.showMoreDetails && <div style={ticketStyle}>
-            Event: {ticketPost.eventName}<br/>
-            Code: {ticketPost.event}<br/>
+            Event: {ticketPost.event.Name}<br/>
+            Code: {ticketPost.event.EventId}<br/>
             File: {ticketPost.fileName}<br/>
             Seats:<br/> {tickets}
           </div>}
