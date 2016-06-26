@@ -89,7 +89,7 @@ TicketData.prototype.getData = function getData(page) {
  *
  * @return {void}
  */
-TicketData.prototype.exportDataAsText = function exportDataAsText() {
+TicketData.prototype.exportDataAsText = function exportDataAsText(directory) {
   // Generate string
   var fields = [];
   for (var page = 0; page < this.pages; page++) {
@@ -108,7 +108,7 @@ TicketData.prototype.exportDataAsText = function exportDataAsText() {
   // export field name and value to defined file
   exportAsText({
     aFields: fields,
-    cPath: './' + DOCUMENT_FILE_NAME.replace('.pdf', '') + '_data.txt'
+    cPath: directory + DOCUMENT_FILE_NAME.replace('.pdf', '') + '_data.txt'
   });
   // remove text field
   for (page = 0; page < fields.length; page++) {
@@ -295,6 +295,12 @@ TicketData.prototype.isNewTicketGroup = function isNewTicketGroup(page) {
       return true;
     }
     var prevPage = page - 1;
+    // If the difference between the current seat and the previous seat is not one, then it is not consecutive, and is thus a new ticket group (tickets must be sorted in ascending order prior to running this function (ie. Running TicketSort.js))
+    var currSeat = parseInt(this.tickets[page].seat, 10);
+    var prevSeat = parseInt(this.tickets[prevPage].seat, 10);
+    if (currSeat - prevSeat !== 1) {
+      return true;
+    }
     // If there is a different row, then this page marks the end of a ticket group
     var currRow = this.tickets[page].row;
     var prevRow = this.tickets[prevPage].row;
@@ -481,7 +487,7 @@ var DOCUMENT_FILE_NAME = this.documentFileName;
 var TICKET_DATA = {
   section: {
     string: [/ection:/i, /\d{3}[A-Z]?/],
-    value: /\d{3}[A-Z]?/
+    value: /\d{3}[A-Z]{1,2}/
   },
   row: {
     string: [/Row:/i, /\d{1,3}/],
@@ -513,6 +519,7 @@ if (PAGES >= 1 || getPageNumWords(0) > 0) {
   ticketData.newData('seat');
   ticketData.newData('date');
   ticketData.newData('serial');
+  var directory = '../To Post/';
   var grpStart = 0;
   for (var page = 0; page < ticketData.pages; page++) {
     // Find the text and save it
@@ -522,24 +529,47 @@ if (PAGES >= 1 || getPageNumWords(0) > 0) {
     ticketData.addData('date', page);
     ticketData.addData('serial', page);
     // Check to see if this page marks the end of a ticket group
-    //if (ticketData.isNewTicketGroup(page)) {
-      // Extract the page and retrieve the text to use for the file name
-      var data = ticketData.getData(page);
-      var directory = '../To Post/';
-      var fileName = data.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + data.section + ' ' + data.row;
-        fileName += ' ' + data.seat;
-      fileName += '.pdf';
-      try {
-        extractPages({
-          nStart: page,
-          cPath: directory + fileName
-        });
-      } catch (e) {
-        app.alert('Failed to save File:\n' + e, 0);
-      } finally {
-        grpStart = page;
-      }
-    //}
+    //     if (ticketData.isNewTicketGroup(page)) {
+    //
+    //       var nEnd = page - 1;
+    //       if (page === ticketData.pages - 1) {
+    //         nEnd++;
+    //       }
+    // Extract the page and retrieve the text to use for the file name
+    //       var data = ticketData.getData(page - 1);
+    //       var fileName = data.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + data.section + ' ' + data.row + ' ' + data.seat;
+    //       if (page !== nEnd) {
+    //         fileName += '-' + ticketData.getData(nEnd).seat;
+    //       }
+    //       fileName += '.pdf';
+    //       console.println(fileName);
+    //       try {
+    //         extractPages({
+    //           nStart: grpStart,
+    //           nEnd: nEnd,
+    //           cPath: directory + fileName
+    //         });
+    //       } catch (e) {
+    //         console.println('Failed to save File:\n' + e, 0);
+    //       } finally {
+    //         grpStart = page;
+    //       }
+    //     }
+    //   }
+    //   ticketData.exportDataAsText(directory);
+    // }
+
+    // Extract the page and retrieve the text to use for the file name
+    var data = ticketData.getData(page);
+    var fileName = data.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + data.section + ' ' + data.row + ' ' + data.seat + '.pdf';
+    try {
+      extractPages({
+        nStart: page,
+        cPath: directory + fileName
+      });
+    } catch (e) {
+      app.alert('Failed to save File:\n' + e, 0);
+    }
   }
-  ticketData.exportDataAsText();
+  ticketData.exportDataAsText(directory);
 }
