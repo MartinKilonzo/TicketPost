@@ -13,14 +13,14 @@ class fileProcessingComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      fileText: props.fileText,
-      filePDF: props.filePDf,
-      toRedact: props.toRedact,
-      redact: props.redact,
-      toRedactOrderNumber: props.toRedactOrderNumber,
-      showForm: props.showForm,
-      showFileProcessing: props.showFileProcessing,
-      ticketPosts: props.ticketPosts
+      fileText: props.fileText, // File{} referencing a text file containing Ticket data
+      filePDF: props.filePDf, // FileList{} referencing the list of Tickets in the form of PDFs
+      toRedact: props.toRedact, // String of the text to redact from the tickets (Non-functional)
+      redact: props.redact, // Boolean indicating whether or not a redaction of the above should be perform (Non-functional)
+      toRedactOrderNumber: props.toRedactOrderNumber, //Boolean indicating whether or not a redaction of the order number should be perform (Non-functional)
+      showForm: props.showForm, // Boolean representing whether or not to show the form view
+      showFileProcessing: props.showFileProcessing, // Boolean representing whether or not to show ticket
+      ticketPosts: props.ticketPosts // TicketPost[Ticket] generated from the input data to be posted to the TicketUtils API
     };
     this.saveForm = this.saveForm.bind(this);
     this.saveTicketData = this.saveTicketData.bind(this);
