@@ -1,7 +1,6 @@
 import React from 'react';
 import Update from 'react-addons-update';
 //TODO: SANITIZE INPUTS
-//TODO: REFACTOR COMPONENTS
 import {
   Form,
   FormControl,
