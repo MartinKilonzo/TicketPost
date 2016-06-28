@@ -1,15 +1,14 @@
 import React from 'react';
 
-let yeomanImage = require('../images/yeoman.png');
+let appLogo = require('../images/TicketPostLogo.png');
 
 class IntroductionComponent extends React.Component {
   render() {
+    const imageStyle = {
+    };
     return (
       <div className="index">
-        <a href="#/fileProcessing"><img src={yeomanImage} alt="Yeoman Generator"/></a>
-        <div className="notice">
-          Please <code>click on the above image</code> to get started!
-        </div>
+        <a href="#/fileProcessing"><img style={imageStyle} src={appLogo} alt="Yeoman Generator"/></a>
       </div>
     );
   }
