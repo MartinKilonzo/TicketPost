@@ -41,13 +41,11 @@ class RedactionFormFieldComponent extends React.Component {
     if (this.state.toRedact) {
       // If there is no text, warn the user
       if (!this.state.value) {
-        console.debug('warning', this.state.value);
         return 'warning';
       } else { // Elseif cases here can be used for 'error' flags for more advanced validation
         return 'success';
       }
     } else if (this.state.value) { // If not checked and there is text
-      console.debug('warning', this.state.value);
       return 'warning';
     } else { // If unchecked and no text
       return 'success';
@@ -74,7 +72,8 @@ class RedactionFormFieldComponent extends React.Component {
 }
 
 RedactionFormFieldComponent.defaultProps = {
-  redact: undefined,
+  redact: '',
+  validationState: 'success',
   toRedact: false
 };
 

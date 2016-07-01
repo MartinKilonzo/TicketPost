@@ -24,8 +24,6 @@ class TextFileProcessingComponent extends React.Component {
     if (FileReader) {
       var reader = new FileReader();
       reader.onload = function(event) {
-        console.debug('Got the File:\n' +
-          'File: ' + file.name + '\n' + 'Date: ' + file.lastModifiedDate + '\n' + 'Type: ' + file.type + '\n' + 'Size: ' + file.size / 1000 + 'kb\n');
         const text = event.target.result;
         let ticketData = [];
         // Iterate through the text file

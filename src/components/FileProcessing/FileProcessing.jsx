@@ -46,6 +46,7 @@ class fileProcessingComponent extends React.Component {
     // Change the view to hide the form and show the newly saved data
     this.state.showForm = false;
     this.state.showFileProcessing = true;
+    this.state.showTickets = true;
   }
   /**
    * Method: Sanitizes and parses file data to create clean Ticket objects.
@@ -132,27 +133,20 @@ class fileProcessingComponent extends React.Component {
     //Query the API for event data
     // TODO: Refactor into seperate function, passed via props into TicketPost to allow for refreshed data
     // Use the previous data to generate queryies for each TicketPost to ensure it corresponds with an event on the TicketUtils API
+    let promises = [];
     ticketPosts.forEach(function getEvent(ticketPost) {
-      let eventQuery = new EventQuery(ticketPost.date, ticketPost.venue);
-      let loadEvents = function() {
-        if (this.readyState == 4 && this.status == 200) { // If the response is good and the request is ready,
-          const response = JSON.parse(this.responseText).Items[0];
-          ticketPost.event = response; // Save the returned event data
-        } //TODO: else error case
-      };
-      let httpEvent = new XMLHttpRequest();
-      httpEvent.onreadystatechange = loadEvents;
-      httpEvent.open('GET', eventQuery.uri, false);
-      httpEvent.setRequestHeader('Accept', 'application/json');
-      httpEvent.setRequestHeader('Content-Type', 'text/plain');
-      httpEvent.setRequestHeader('X-Signature', eventQuery.signature);
-      httpEvent.setRequestHeader('X-Token', eventQuery.token);
-      httpEvent.setRequestHeader('X-API-Version', eventQuery.version);
-      httpEvent.send();
+      promises.push(new EventQuery(ticketPost.date, ticketPost.venue).send());
     });
-    console.debug(ticketPosts);
-    //TODO: Wait for all event calls to be returned before saving state (Asynchronous check)
-    this.setState({ticketPosts: ticketPosts}); // Save the newly generated TicketPosts to the state
+    const state = this;
+    Promise.all(promises).then(function success(results) {
+      results.forEach(function saveEvent(result, key) {
+        ticketPosts[key].event = result.Items[0];
+      });
+      state.setState({ticketPosts: ticketPosts}); // Save the newly generated TicketPosts to the state
+    }).catch(function error(err) {
+      console.error('ERROR', err);
+      //TODO: Alert user about error (color ticketPost red); create error components for ticketpost and use those (dimmed with error message)
+    });
   }
   /**
    * Method: Handoff function that cleans parsed text file data (now TicketObjects), groups them, and saves the result.
@@ -183,7 +177,7 @@ class fileProcessingComponent extends React.Component {
       <div>
         {this.state.showForm && <TicketOptions saveForm={this.saveForm}></TicketOptions>}
         {this.state.showFileProcessing && <TextFileProcessing file={this.state.fileText} saveTicketData={this.saveTicketData}></TextFileProcessing>}
-        <ListTicketPosts ticketPosts={ticketPosts} modifyTicketPost={this.modifyTicketPost}></ListTicketPosts>
+        {this.state.showTickets && <ListTicketPosts ticketPosts={ticketPosts} modifyTicketPost={this.modifyTicketPost}></ListTicketPosts>}
       </div>
     );
   }
@@ -192,6 +186,7 @@ class fileProcessingComponent extends React.Component {
 fileProcessingComponent.defaultProps = {
   showForm: true,
   showFileProcessing: false,
+  showTickets: false,
   ticketPosts: []
 };
 

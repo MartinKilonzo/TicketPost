@@ -43,7 +43,7 @@ class OptionsFormComponent extends React.Component {
     let formData = {};
     for (var fieldName in this.state) {
       let field = this.state[fieldName];
-      if (typeof field === 'undefined' || !field.validationState) {
+      if (typeof field === 'undefined' || field.validationState !== 'success') {
         return;
       }
       formData[fieldName] = field.value;
@@ -85,8 +85,14 @@ class OptionsFormComponent extends React.Component {
 }
 
 OptionsFormComponent.defaultProps = {
-  redact: undefined,
-  toRedact: true,
+  redact: {
+    value: '',
+    validationState: 'success'
+  },
+  toRedact: {
+    value: false,
+    validationState: 'success'
+  },
   filePDF: undefined,
   fileText: undefined
 };

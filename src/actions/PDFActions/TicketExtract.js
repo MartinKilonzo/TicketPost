@@ -529,35 +529,34 @@ if (PAGES >= 1 || getPageNumWords(0) > 0) {
     ticketData.addData('date', page);
     ticketData.addData('serial', page);
     // Check to see if this page marks the end of a ticket group
-    //     if (ticketData.isNewTicketGroup(page)) {
-    //
-    //       var nEnd = page - 1;
-    //       if (page === ticketData.pages - 1) {
-    //         nEnd++;
-    //       }
-    // Extract the page and retrieve the text to use for the file name
-    //       var data = ticketData.getData(page - 1);
-    //       var fileName = data.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + data.section + ' ' + data.row + ' ' + data.seat;
-    //       if (page !== nEnd) {
-    //         fileName += '-' + ticketData.getData(nEnd).seat;
-    //       }
-    //       fileName += '.pdf';
-    //       console.println(fileName);
-    //       try {
-    //         extractPages({
-    //           nStart: grpStart,
-    //           nEnd: nEnd,
-    //           cPath: directory + fileName
-    //         });
-    //       } catch (e) {
-    //         console.println('Failed to save File:\n' + e, 0);
-    //       } finally {
-    //         grpStart = page;
-    //       }
-    //     }
-    //   }
-    //   ticketData.exportDataAsText(directory);
-    // }
+//     if (ticketData.isNewTicketGroup(page)) {
+//       var nEnd = page - 1;
+//       if (page === ticketData.pages - 1) {
+//         nEnd++;
+//       }
+//       // Extract the page and retrieve the text to use for the file name
+//       var data = ticketData.getData(grpStart);
+//       var fileName = data.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + data.section + ' ' + data.row + ' ' + data.seat;
+//       if (grpStart !== nEnd) {
+//         fileName += '-' + ticketData.getData(nEnd).seat;
+//       }
+//       fileName += '.pdf';
+//       console.println(fileName);
+//       try {
+//         extractPages({
+//           nStart: grpStart,
+//           nEnd: nEnd,
+//           cPath: directory + fileName
+//         });
+//       } catch (e) {
+//         console.println('Failed to save File:\n' + e, 0);
+//       } finally {
+//         grpStart = page;
+//       }
+//     }
+//   }
+//   ticketData.exportDataAsText(directory);
+// }
 
     // Extract the page and retrieve the text to use for the file name
     var data = ticketData.getData(page);

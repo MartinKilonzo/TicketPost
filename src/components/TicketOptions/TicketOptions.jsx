@@ -25,11 +25,6 @@ class TicketOptions extends React.Component {
   }
 }
 
-TicketOptions.defaultProps = {
-  redact: undefined,
-  toRedact: false,
-  filePDF: undefined,
-  fileText: undefined
-};
+TicketOptions.defaultProps = {};
 
 export default TicketOptions;

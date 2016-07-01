@@ -123,10 +123,7 @@ let PostQuery = function PostQuery(ticketPost) {
   addVendorData(this.query, ticketPost);
 
   const queryProduct = '/POS/Inventory/AddTickets';
-  this.uri = TicketUtils.API_HOST + queryProduct;
-  this.signature = TicketUtils.generateSignature(queryProduct);
-  this.token = TicketUtils.AUTH_TOKEN;
-  this.version = TicketUtils.API_VERSION;
+  return new TicketUtils.Query('POST', queryProduct, this.query);
 };
 
 export default PostQuery;

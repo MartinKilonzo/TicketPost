@@ -24,6 +24,7 @@ class TicketPostComponent extends React.Component {
     this.saveChanges = this.saveChanges.bind(this);
     this.postTickets = this.postTickets.bind(this);
     this.uploadTickets = this.uploadTickets.bind(this);
+    //this.postTickets();
   }
   changeView() {
     this.setState({
@@ -31,63 +32,61 @@ class TicketPostComponent extends React.Component {
     });
   }
   postTickets() {
-    let postQuery = new PostQuery(this.state);
     const state = this;
-    let getResponse = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        const response = JSON.parse(this.responseText);
-        if (response.Status === 'Failure') {
-          console.error(response.Messages[0].Description);
-          //TODO: Alert user that upload failed
+    let postQuery = new PostQuery(this.state);
+    postQuery.send().then(function success(result) {
+      if (result.Status === 'Failure') {
+        const description = result.Messages[0].Description;
+        if (description === 'Ticket Group Already Exists With Same Seats.') {
+          console.warn(description);
+          state.setState({postStatus: 'warning'});
         } else {
-          state.setState({itemId: response.Data.Items[0][0].POItemId
-          });
-          state.uploadTickets(); //TODO: CHECK IF THIS WORKS
+          throw new Error(description);
         }
+      } else {
+        state.setState({postStatus: 'success'});
+        state.setState({itemId: result.Data.Items[0][0].POItemId
+        }, function callback() {
+          //state.uploadTickets();
+        });
       }
-    };
-    let httpPost = new XMLHttpRequest();
-    httpPost.onreadystatechange = getResponse;
-    httpPost.open('POST', postQuery.uri, true);
-    httpPost.setRequestHeader('Content-Type', 'application/json');
-    httpPost.setRequestHeader('X-Signature', postQuery.signature);
-    httpPost.setRequestHeader('X-Token', postQuery.token);
-    httpPost.setRequestHeader('X-API-Version', postQuery.version);
-    httpPost.send(JSON.stringify(postQuery.query));
+    }).catch(function error(err) {
+      console.error('ERROR', err);
+      state.setState({postStatus: 'danger'});
+    });
   }
   uploadTickets() {
+    const state = this;
     const ticketPost = this.state;
-    let fileQuery = new FileQuery(ticketPost);
-    let fileLoadsRemaining = ticketPost.count;
-    let getResponse = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        const response = JSON.parse(this.responseText);
-        if (response.Status === 'Failure') {
-          console.error(response.Messages[0].Description);
-          //TODO: Alert user that upload failed
-        }
-        //TODO: Alert user that upload succeeded
-      }
-    };
+    let promises = [];
     ticketPost.tickets.forEach(function loadFile(ticket) {
-      let fileReader = new FileReader();
-      fileReader.onload = function() {
-        const file = event.target.result.slice('data:application/pdf;base64,'.length);
-        fileQuery.addFile(ticket.seat, file);
-        console.debug(ticket.file.name);
-        fileLoadsRemaining--;
-        if (fileLoadsRemaining <= 0) {
-          let httpFile = new XMLHttpRequest();
-          httpFile.onreadystatechange = getResponse;
-          httpFile.open('POST', fileQuery.uri, true);
-          httpFile.setRequestHeader('Content-Type', 'application/json');
-          httpFile.setRequestHeader('X-Signature', fileQuery.signature);
-          httpFile.setRequestHeader('X-Token', fileQuery.token);
-          httpFile.setRequestHeader('X-API-Version', fileQuery.version);
-          httpFile.send(JSON.stringify(fileQuery.query));
+      promises.push(new Promise(function(resolve, reject) {
+        let fileReader = new FileReader();
+        fileReader.readAsDataURL(ticket.file);
+        fileReader.onload = function() {
+          return resolve(event.target.result);
         }
-      };
-      fileReader.readAsDataURL(ticket.file);
+        fileReader.onerror = function() {
+          return reject(event.target.result);
+        }
+      }));
+    });
+    Promise.all(promises).then(function success(results) {
+      let files = [];
+      results.forEach(function uploadFile(file, key) {
+        files.push({
+          Seat: ticketPost.tickets[key].seat,
+          File: file.slice('data:application/pdf;base64,'.length)
+        });
+      });
+      let postQuery = new FileQuery(ticketPost.itemId, files);
+      return postQuery.send();
+    }).then(function success() {
+      state.setState({uploadStatus: 'success'});
+    }).catch(function error(err) {
+      console.error('ERROR', err);
+      state.setState({uploadStatus: 'danger'});
+      //TODO: Alert the user outside of the console, perhaps popovers
     });
   }
   saveChanges(newTicketPost) {
@@ -98,9 +97,9 @@ class TicketPostComponent extends React.Component {
       whiteSpace: 'normal'
     };
     const ticketPost = this.state;
-    let tickets = ticketPost.start;
+    let tickets = ticketPost.tickets[0].seat.toString();
     for (var i = 1; i < ticketPost.count; i++) {
-      tickets += ', ' + (ticketPost.start + i);
+      tickets += ', ' + ticketPost.tickets[i].seat.toString();
     }
     //TODO: Add another button for refreshing event data if fail, and use as alternate to current
     return (
@@ -117,18 +116,20 @@ class TicketPostComponent extends React.Component {
             Event: {ticketPost.event.Name}<br/>
             Code: {ticketPost.event.EventId}<br/>
             File: {ticketPost.fileName}<br/>
-            Seats:<br/> {tickets}
+            Seats:<br/>{tickets}
           </div>}
         </Button>
-        <Button bsStyle="success" onClick={this.postTickets} block>Post Set</Button>
-        <Button bsStyle="success" onClick={this.uploadTickets} block>Upload Set</Button>
+        <Button bsStyle={ticketPost.postStatus} onClick={this.postTickets} block>Post Set</Button>
+        <Button bsStyle={ticketPost.uploadStatus} onClick={this.uploadTickets} block>Upload Set</Button>
       </div>
     );
   }
 }
 
 TicketPostComponent.defaultProps = {
-  showMoreDetails: false
+  showMoreDetails: false,
+  postStatus: 'info',
+  uploadStatus: 'info'
 };
 
 export default TicketPostComponent;
