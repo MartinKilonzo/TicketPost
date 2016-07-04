@@ -551,3 +551,24 @@ for (var page = 0; page < PAGES; page++) {
   ticketData.addData('serial', page);
 }
 ticketData.removeErrors();
+PAGES = this.numPages;
+if (PAGES >= 1 || getPageNumWords(0) > 0) {
+  var ticketData = new TicketData(PAGES, TICKET_DATA);
+  ticketData.newData('section');
+  ticketData.newData('row');
+  ticketData.newData('seat');
+  ticketData.newData('date');
+  ticketData.newData('serial');
+  ticketData.newData('orderNumber');
+
+  for (var page = 0; page < PAGES; page++) {
+    // Find the text and save it
+    ticketData.addData('section', page);
+    ticketData.addData('row', page);
+    ticketData.addData('seat', page);
+    ticketData.addData('date', page);
+    ticketData.addData('serial', page);
+    ticketData.addData('orderNumber', page);
+  }
+  ticketData.sortTickets();
+}
