@@ -1,5 +1,4 @@
 import TicketUtils from './TicketUtils.jsx';
-//TODO: move xhr into query files
 let PurchaseOrderQuery = function PurchaseOrderQuery(ticketPost) {
   this.query = {
     POId: ticketPost.poId, // PurchaseOrder Id

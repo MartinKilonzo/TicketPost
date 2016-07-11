@@ -4,6 +4,7 @@ import {Button} from 'react-bootstrap';
 import Date from './Date.jsx';
 import PostQuery from '../TicketUtils/PostQuery.jsx';
 import FileQuery from '../TicketUtils/FileQuery.jsx';
+import Price from '../tickets/TicketPrice.jsx'
 
 class TicketPostComponent extends React.Component {
   constructor(props) {
@@ -24,7 +25,7 @@ class TicketPostComponent extends React.Component {
     this.saveChanges = this.saveChanges.bind(this);
     this.postTickets = this.postTickets.bind(this);
     this.uploadTickets = this.uploadTickets.bind(this);
-    //this.postTickets();
+    // this.postTickets();
   }
   changeView() {
     this.setState({
@@ -44,6 +45,7 @@ class TicketPostComponent extends React.Component {
           throw new Error(description);
         }
       } else {
+        console.debug(result);
         state.setState({postStatus: 'success'});
         state.setState({itemId: result.Data.Items[0][0].POItemId
         }, function callback() {
@@ -75,13 +77,17 @@ class TicketPostComponent extends React.Component {
       let files = [];
       results.forEach(function uploadFile(file, key) {
         files.push({
-          Seat: ticketPost.tickets[key].seat,
+          Seat: ticketPost.tickets[key].seat.toString(),
           File: file.slice('data:application/pdf;base64,'.length)
         });
+        if (key === 0) {
+          console.log(files[0].File);
+        }
       });
-      let postQuery = new FileQuery(ticketPost.itemId, files);
-      return postQuery.send();
-    }).then(function success() {
+      let fileQuery = new FileQuery(ticketPost.itemId, files);
+      return fileQuery.send();
+    }).then(function success(result) {
+      console.debug(result);
       state.setState({uploadStatus: 'success'});
     }).catch(function error(err) {
       console.error('ERROR', err);
@@ -93,10 +99,10 @@ class TicketPostComponent extends React.Component {
     this.props.saveChanges(this.props.ticketPost, newTicketPost);
   }
   render() {
+    const ticketPost = this.state;
     const ticketStyle = {
       whiteSpace: 'normal'
     };
-    const ticketPost = this.state;
     let tickets = ticketPost.tickets[0].seat.toString();
     for (var i = 1; i < ticketPost.count; i++) {
       tickets += ', ' + ticketPost.tickets[i].seat.toString();
@@ -105,20 +111,21 @@ class TicketPostComponent extends React.Component {
     return (
       <div>
         <Button bsStyle="default" onClick={this.changeView} block>
-          {!this.state.showMoreDetails && <div style={ticketStyle}>
+          {!ticketPost.showMoreDetails && <div style={ticketStyle}>
             Toronto Blue Jays<br/>
             <Date date={ticketPost.date}></Date>
             Section: {ticketPost.section}<br/>
             Row: {ticketPost.row}<br/>
             Count: {ticketPost.count}<br/>
           </div>}
-          {this.state.showMoreDetails && <div style={ticketStyle}>
+          {ticketPost.showMoreDetails && <div style={ticketStyle}>
             Event: {ticketPost.event.Name}<br/>
             Code: {ticketPost.event.EventId}<br/>
             File: {ticketPost.fileName}<br/>
             Seats:<br/>{tickets}
           </div>}
         </Button>
+        <Price eventData={ticketPost.event}></Price>
         <Button bsStyle={ticketPost.postStatus} onClick={this.postTickets} block>Post Set</Button>
         <Button bsStyle={ticketPost.uploadStatus} onClick={this.uploadTickets} block>Upload Set</Button>
       </div>

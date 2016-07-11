@@ -31,3 +31,4 @@ bower_components/
 
 #API Data
 src/components/TicketUtils/TicketUtils.jsx
+/**/Authentication.jsx

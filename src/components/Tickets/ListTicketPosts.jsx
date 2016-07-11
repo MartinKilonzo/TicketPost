@@ -2,7 +2,7 @@ import React from 'react';
 
 import TicketPost from './TicketPost';
 
-import {Col, Button, Row} from 'react-bootstrap';
+import {Col, Button, ButtonGroup, Row} from 'react-bootstrap';
 
 class ListTicketPostsComponent extends React.Component {
   constructor(props) {
@@ -13,17 +13,25 @@ class ListTicketPostsComponent extends React.Component {
     const colStyle = {
       textAlign: 'center'
     }
+    const buttonStyle = {
+      width: '33%',
+      paddingTop: '10px',
+      paddingLeft: '4%',
+      paddingBottom: '10px',
+      textAlign: 'center'
+    }
+    const btnGrpStyle = {
+      marginBottom: '20px'
+    }
     return (
       <div className="container">
         <Row>
-          <Col xs={2} offset={3}>
-            <Button bsStyle="success">Accepted</Button>
-          </Col>
-          <Col xs={2}>
-            <Button bsStyle="warning">Warnings</Button>
-          </Col>
-          <Col xs={2}>
-            <Button bsStyle="danger">Errors</Button>
+          <Col xs={4} xsOffset={4}>
+            <ButtonGroup justified style={btnGrpStyle}>
+              <Button bsStyle="success" style={buttonStyle}>Accepted</Button>
+              <Button bsStyle="warning" style={buttonStyle}>Warnings</Button>
+              <Button bsStyle="danger" style={buttonStyle}>Errors</Button>
+            </ButtonGroup>
           </Col>
         </Row>
         <Row>

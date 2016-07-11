@@ -1,6 +1,6 @@
 import TicketUtils from './TicketUtils.jsx';
-//TODO: move xhr into query files
 let FileQuery = function FileQuery(itemId, files) {
+  console.debug(itemId);
   this.query = {
     Files: files,
     ItemId: itemId

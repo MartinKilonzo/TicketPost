@@ -1,5 +1,4 @@
 import TicketUtils from './TicketUtils.jsx';
-//TODO: move xhr into query files
 let Ticket = function Ticket(ticketPost) {
   this.Event = ticketPost.event.Name;
   this.EventDate = ticketPost.event.Date;
@@ -33,9 +32,9 @@ let Ticket = function Ticket(ticketPost) {
     InHandDate: '' //In Hand Date in ISO 8601 Format (Ex. 2013-0621T05:32:07) Required if InHandStatus is (1)
   };
   this.Notes = ''; // Public Note
-  this.InternalNotes = 'Automated Post'; // Private Note
+  this.InternalNotes = 'New Post'; // Private Note
   this.BrokerNotes = ''; // Broker Note
-  this.SplitOption = 2; // Splitting options of your tickets: Any = 0, Multiples of = 1, Avoid 1 = 2, No Splits = 3
+  this.SplitOption = 1; // Splitting options of your tickets: Any = 0, Multiples of = 1, Avoid 1 = 2, No Splits = 3
   this.Splits = 0; // Required if SplitOption is Multiples of (1)
   this.DeliveryOption = 4; // Delivery Option: Standard = 2, eDelivery = 4, Paperless = 32, Flash = 64, Mobile = 128
   this.NearTermDeliveryOption = 4; //NearTerm Delivery Option: eDelivery = 4, WillCall = 8, LocalPickup = 16, Paperless = 32, Flash = 64, Mobile = 128
@@ -60,7 +59,7 @@ let addVendorData = function addVendorData(TicketInventory, ticketPost) {
   };
 
   TicketInventory.POType = 1; // PO type of your tickets: Standard = 1, Spec= 2, Consignment= 3
-  TicketInventory.Spec = { // ; Required if POType = 1
+  TicketInventory.Spec = { // Required if POType = 1
     ExpirationType: 1, //PO Expiration type of your tickets: Never = 1, DaysBeforeEvent= 2, OnDate= 3; Required if POType = 1
     ExpirationDate: '', // Expiration Date; Required if POType = 1
     ExpirationDays: 0 // PO Expiration Days; Required if POType = 1

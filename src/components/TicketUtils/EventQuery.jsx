@@ -37,7 +37,7 @@ let EventQuery = function EventQuery(date, venue) {
   }
   queryURI = queryProduct + queryURI;
 
-  return new TicketUtils.Query('GET', queryURI); // TODO: Check if JSON or plain text
+  return new TicketUtils.Query('GET', queryURI);
 };
 
 export default EventQuery;

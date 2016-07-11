@@ -75,7 +75,8 @@ class fileProcessingComponent extends React.Component {
         // TODO: Include return to form button on alert (Forced?)
         alert('Error matching ' + ticket.fileName + ' to a given PDF file\nPlease check that all files have are correct.');
       }
-      ticket.date = new Date(ticket.date).toISOString(); // Conver the date per ISO 8601 formatting to be used in the TicketUtils API
+      //TODO:Check if date is before today and warn the user of that
+      ticket.date = new Date(ticket.date).toISOString(); // Convert the date per ISO 8601 formatting to be used in the TicketUtils API
       ticket.sectionNumber = parseInt(ticket.section); // Parse the section for comparisons
       ticket.section = ticket.section; // Save the section to be used in the TicketUtils API (Redundant, but for readability purposes)
       ticket.row = parseInt(ticket.row); // Parse the row for comparisons
