@@ -21,24 +21,29 @@ let InventoryQuery = function InventoryQuery(eventData) {
         }
         let query = {
           eventid: matchingEvent.id,
+          zoneidlist: eventData.zoneidlist,
+          sectionidlist: eventData.sectionidlist,
           zonestats: true,
-          sectionstats: true,
-          pricingstats: true,
-        }
-        let queryURI = '';
-        for (var field in query) {
-          if (typeof query[field] !== 'undefined') {
-            // If the query string exists (length > 0), then append the ampersand
-            if (queryURI.length) {
-              queryURI += '&';
-            }
-            // Append the query to the query string
-            queryURI += [field] + '=' + encodeURI(query[field]);
-          }
+          sectionstats: true
+          // pricingsummary: true
         }
         const endpoint = '/search/inventory/v1';
-        queryURI = endpoint + '?' + queryURI;
-        console.debug(queryURI);
+        let queryURI = StubHub.getURI(endpoint, query);
+        // let results = [];
+        // new StubHub.Query('GET', queryURI).send()
+        // .then(function success(result) {
+        //   const listingsToFetch = results.rows;
+        //   results = result.listing;
+        //   let remaningListings = result.totalListings - listingsToFetch;
+        //   let promises = [];
+        //   query.start = listingsToFetch;
+        //   while (query.start < remaningListings) {
+        //     queryURI = StubHub.getURI(endpoint, query);
+        //     console.debug(query.start, remaningListings);
+        //     // promises.push(new StubHub.Query('GET', queryURI).send());
+        //     query.start += listingsToFetch;
+        //   }
+        // });
         resolve(new StubHub.Query('GET', queryURI).send());
       }).catch(function error(err) {
         reject(err);

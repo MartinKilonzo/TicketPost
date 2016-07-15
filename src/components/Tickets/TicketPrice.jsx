@@ -14,11 +14,12 @@ class TicketPriceComponent extends React.Component {
   getPrice() {
     const state = this;
     let inventoryQuery = new InventoryQuery(this.state.eventData);
-    let temp = inventoryQuery.send();
-    console.debug(temp);
-    //TODO: FIX LOOPING REQUESTS
-    temp.then(function success(result) {
-      console.debug(result);
+    //TODO: FIX 400 REQUESTS
+    inventoryQuery.send()
+    .then(function success(result) {
+      let listings = result;
+      const averagePrice = listings.pricingsummary.averageTicketPrice
+      console.debug(averagePrice, listings);
       state.setState({postStatus: 'success'});
     }).catch(function error(err) {
       console.error('ERROR', err);

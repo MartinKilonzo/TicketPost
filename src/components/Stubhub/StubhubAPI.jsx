@@ -6,6 +6,21 @@ let generateAuthToken = function generateAuthToken() {
   return 'Bearer ' + token;
 };
 
+let getURI = function getURI(endpoint, query) {
+  let queryURI = '';
+  for (var field in query) {
+    if (typeof query[field] !== 'undefined') {
+      // If the query string exists (length > 0), then append the ampersand
+      if (queryURI.length) {
+        queryURI += '&';
+      }
+      // Append the query to the query string
+      queryURI += [field] + '=' + encodeURI(query[field]);
+    }
+  }
+  return endpoint + '?' + queryURI;
+}
+
 //TODO: Create object for user actions, which use user tokens
 let generateUserToken = function generateUserToken(key, secret) {
   return 'Bearer ' + enc.Base64.stringify(key + ':' + secret);
@@ -45,7 +60,8 @@ let Query = function(requestType, product, query) {
 };
 
 let StubHub = {
-  Query: Query
+  Query: Query,
+  getURI: getURI
 };
 
 export default StubHub;
