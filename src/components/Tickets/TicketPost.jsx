@@ -2,9 +2,9 @@ import React from 'react';
 import {Button} from 'react-bootstrap';
 
 import Date from './Date.jsx';
-import PostQuery from '../TicketUtils/PostQuery.jsx';
-import FileQuery from '../TicketUtils/FileQuery.jsx';
-import Price from '../tickets/TicketPrice.jsx'
+import Price from '../tickets/TicketPrice.jsx';
+import PostTicket from './PostTickets.jsx';
+import UploadTicket from './UploadTickets.jsx';
 
 class TicketPostComponent extends React.Component {
   constructor(props) {
@@ -17,14 +17,13 @@ class TicketPostComponent extends React.Component {
       start: props.data.start,
       count: props.data.count,
       tickets: props.data.tickets,
-      fileName: props.data.fileName,
-      file: props.data.file,
+      // fileName: props.data.fileName, Depreciated.
+      // file: props.data.file, Depreciated.
       showMoreDetails: props.showMoreDetails
     };
     this.changeView = this.changeView.bind(this);
     this.saveChanges = this.saveChanges.bind(this);
-    this.postTickets = this.postTickets.bind(this);
-    this.uploadTickets = this.uploadTickets.bind(this);
+    this.submitTickets = this.submitTickets.bind(this);
     // this.postTickets();
   }
   changeView() {
@@ -32,68 +31,8 @@ class TicketPostComponent extends React.Component {
       showMoreDetails: !this.state.showMoreDetails
     });
   }
-  postTickets() {
-    const state = this;
-    let postQuery = new PostQuery(this.state);
-    postQuery.send().then(function success(result) {
-      if (result.Status === 'Failure') {
-        const description = result.Messages[0].Description;
-        if (description === 'Ticket Group Already Exists With Same Seats.') {
-          console.warn(description);
-          state.setState({postStatus: 'warning'});
-        } else {
-          throw new Error(description);
-        }
-      } else {
-        console.debug(result);
-        state.setState({postStatus: 'success'});
-        state.setState({itemId: result.Data.Items[0][0].POItemId
-        }, function callback() {
-          //state.uploadTickets();
-        });
-      }
-    }).catch(function error(err) {
-      console.error('ERROR', err);
-      state.setState({postStatus: 'danger'});
-    });
-  }
-  uploadTickets() {
-    const state = this;
-    const ticketPost = this.state;
-    let promises = [];
-    ticketPost.tickets.forEach(function loadFile(ticket) {
-      promises.push(new Promise(function(resolve, reject) {
-        let fileReader = new FileReader();
-        fileReader.readAsDataURL(ticket.file);
-        fileReader.onload = function() {
-          return resolve(event.target.result);
-        }
-        fileReader.onerror = function() {
-          return reject(event.target.result);
-        }
-      }));
-    });
-    Promise.all(promises).then(function success(results) {
-      let files = [];
-      results.forEach(function uploadFile(file, key) {
-        files.push({
-          Seat: ticketPost.tickets[key].seat.toString(),
-          File: file.slice('data:application/pdf;base64,'.length)
-        });
-        if (key === 0) {
-          console.log(files[0].File);
-        }
-      });
-      let fileQuery = new FileQuery(ticketPost.itemId, files);
-      return fileQuery.send();
-    }).then(function success(result) {
-      console.debug(result);
-      state.setState({uploadStatus: 'success'});
-    }).catch(function error(err) {
-      console.error('ERROR', err);
-      state.setState({uploadStatus: 'danger'});
-      //TODO: Alert the user outside of the console, perhaps popovers
-    });
+  submitTickets() {
+    console.log('Posted: ', this.state);
   }
   saveChanges(newTicketPost) {
     this.props.saveChanges(this.props.ticketPost, newTicketPost);
@@ -126,17 +65,15 @@ class TicketPostComponent extends React.Component {
           </div>}
         </Button>
         <Price eventData={ticketPost.event}></Price>
-        <Button bsStyle={ticketPost.postStatus} onClick={this.postTickets} block>Post Set</Button>
-        <Button bsStyle={ticketPost.uploadStatus} onClick={this.uploadTickets} block>Upload Set</Button>
+        <PostTicket {...ticketPost} callback={this.submitTickets}></PostTicket>
+        <UploadTicket {...ticketPost} ></UploadTicket>
       </div>
     );
   }
 }
 
 TicketPostComponent.defaultProps = {
-  showMoreDetails: false,
-  postStatus: 'info',
-  uploadStatus: 'info'
+  showMoreDetails: false
 };
 
 export default TicketPostComponent;

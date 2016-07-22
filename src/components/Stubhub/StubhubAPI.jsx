@@ -51,7 +51,16 @@ let Query = function(requestType, product, query) {
         if (this.status == 200) { // If the response is good and the request is ready,
           return resolve(response);
         } else { // Otherwise, error
-          return reject({status: this.status, statusText: response});
+          const responseMessage = response.errors.error[0].errorMessage;
+          let statusText = '';
+          for (var char = 0; char < responseMessage.length; char++) {
+            if (responseMessage[char]=== ';') {
+              statusText += '.';
+              break;
+            }
+            statusText += responseMessage[char];
+          }
+          return reject({status: this.status, statusText: statusText, statusObject: response});
         }
       };
       xhr.send(JSON.stringify(xhrOptions.query) || void 0);
