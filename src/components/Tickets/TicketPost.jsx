@@ -56,17 +56,16 @@ class TicketPostComponent extends React.Component {
             Section: {ticketPost.section}<br/>
             Row: {ticketPost.row}<br/>
             Count: {ticketPost.count}<br/>
+            Seats:<br/>{tickets}
           </div>}
           {ticketPost.showMoreDetails && <div style={ticketStyle}>
             Event: {ticketPost.event.Name}<br/>
             Code: {ticketPost.event.EventId}<br/>
-            File: {ticketPost.fileName}<br/>
-            Seats:<br/>{tickets}
           </div>}
         </Button>
-        <Price eventData={ticketPost.event}></Price>
+        <Price eventData={ticketPost.event} section={ticketPost.section}></Price>
         <PostTicket {...ticketPost} callback={this.submitTickets}></PostTicket>
-        <UploadTicket {...ticketPost} ></UploadTicket>
+        <UploadTicket {...ticketPost}></UploadTicket>
       </div>
     );
   }

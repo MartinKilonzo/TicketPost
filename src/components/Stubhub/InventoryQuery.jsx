@@ -22,7 +22,7 @@ let InventoryQuery = function InventoryQuery(eventData) {
         let query = {
           eventid: matchingEvent.id,
           zoneidlist: eventData.zoneidlist,
-          sectionidlist: eventData.sectionidlist,
+          sectionidlist: eventData.sectionId,
           zonestats: true,
           sectionstats: true
           // pricingsummary: true
