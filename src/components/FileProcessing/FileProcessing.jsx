@@ -2,6 +2,7 @@ import React from 'react';
 
 import TicketOptions from '../TicketOptions/TicketOptions.jsx'
 import TextFileProcessing from '../../actions/FileProcessingActions/TextFileProcessing.jsx';
+import PDFFileProcessing from '../../actions/FileProcessingActions/PDFFileProcessing.jsx';
 import ListTicketPosts from '../Tickets/ListTicketPosts.jsx';
 import EventQuery from '../TicketUtils/EventQuery.jsx';
 
@@ -19,7 +20,8 @@ class fileProcessingComponent extends React.Component {
       redact: props.redact, // Boolean indicating whether or not a redaction of the above should be perform (Non-functional)
       toRedactOrderNumber: props.toRedactOrderNumber, //Boolean indicating whether or not a redaction of the order number should be perform (Non-functional)
       showForm: props.showForm, // Boolean representing whether or not to show the form view
-      showFileProcessing: props.showFileProcessing, // Boolean representing whether or not to show ticket
+      showTextFileProcessing: props.showTextFileProcessing, // Boolean representing whether or not to show ticket processing details
+      showPDFFileProcessing: props.showPDFFileProcessing, // Boolean representing whether or not to show PDF processing details
       ticketPosts: props.ticketPosts // TicketPost[Ticket] generated from the input data to be posted to the TicketUtils API
     };
     this.saveForm = this.saveForm.bind(this);
@@ -177,7 +179,8 @@ class fileProcessingComponent extends React.Component {
     return (
       <div>
         {this.state.showForm && <TicketOptions saveForm={this.saveForm}></TicketOptions>}
-        {this.state.showFileProcessing && <TextFileProcessing file={this.state.fileText} saveTicketData={this.saveTicketData}></TextFileProcessing>}
+        {this.state.showTextFileProcessing && <TextFileProcessing file={this.state.fileText} saveTicketData={this.saveTicketData}></TextFileProcessing>}
+        {this.state.showPDFFileProcessing && <PDFFileProcessing file={this.state.filePDF} saveTicketData={this.saveTicketData}></PDFFileProcessing>}
         {this.state.showTickets && <ListTicketPosts ticketPosts={ticketPosts} modifyTicketPost={this.modifyTicketPost}></ListTicketPosts>}
       </div>
     );
