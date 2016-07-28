@@ -19,8 +19,7 @@ class OptionsFormComponent extends React.Component {
     this.state = {
       redact: props.redact,
       toRedact: props.toRedact,
-      filePDF: props.filePDF,
-      fileText: props.fileText
+      filePDF: props.filePDF
     };
     this.submitForm = this.submitForm.bind(this);
     this.updateForm = this.updateForm.bind(this);
@@ -70,7 +69,6 @@ class OptionsFormComponent extends React.Component {
         <Form horizontal onSubmit={this.submitForm}>
           <RedactionField controlId='redact' updateForm={this.updateForm}></RedactionField>
           <FileField {...PDFField} updateForm={this.updateForm}></FileField>
-          <FileField {...textField} updateForm={this.updateForm}></FileField>
           <FormGroup>
             <Col smOffset={2} sm={10}>
               <Button type="submit">

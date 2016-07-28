@@ -20,7 +20,7 @@ var api = function(port) {
   var routes = require('./routes/routes.js')(app);
 
   var server = app.listen(port, () => {
-    console.log('Listening at API port: ' + server.address().port);
+    console.log('Express ready at ' + server.address().port);
   });
 };
 

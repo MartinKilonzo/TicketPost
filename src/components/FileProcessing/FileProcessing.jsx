@@ -20,7 +20,7 @@ class fileProcessingComponent extends React.Component {
       redact: props.redact, // Boolean indicating whether or not a redaction of the above should be perform (Non-functional)
       toRedactOrderNumber: props.toRedactOrderNumber, //Boolean indicating whether or not a redaction of the order number should be perform (Non-functional)
       showForm: props.showForm, // Boolean representing whether or not to show the form view
-      showTextFileProcessing: props.showTextFileProcessing, // Boolean representing whether or not to show ticket processing details
+      showPDFFileProcessing: props.showPDFFileProcessing, // Boolean representing whether or not to show ticket processing details
       showPDFFileProcessing: props.showPDFFileProcessing, // Boolean representing whether or not to show PDF processing details
       ticketPosts: props.ticketPosts // TicketPost[Ticket] generated from the input data to be posted to the TicketUtils API
     };
@@ -37,18 +37,18 @@ class fileProcessingComponent extends React.Component {
   saveForm(data) {
     // Create a new state object and load it with the form data
     let newState = {
-      fileText: data.fileText[0],
       filePDF: data.filePDF,
       toRedact: data.toRedact,
       redact: data.redact,
       toRedactOrderNumber: data.toRedactOrderNumber
     };
     // Save the new state
-    this.setState(newState);
-    // Change the view to hide the form and show the newly saved data
-    this.state.showForm = false;
-    this.state.showFileProcessing = true;
-    this.state.showTickets = true;
+    this.setState(newState, function() {
+      // Change the view to hide the form and show the newly saved data
+      this.state.showForm = false;
+      this.state.showPDFFileProcessing = true;
+      this.state.showTickets = false;
+    });
   }
   /**
    * Method: Sanitizes and parses file data to create clean Ticket objects.
@@ -179,7 +179,6 @@ class fileProcessingComponent extends React.Component {
     return (
       <div>
         {this.state.showForm && <TicketOptions saveForm={this.saveForm}></TicketOptions>}
-        {this.state.showTextFileProcessing && <TextFileProcessing file={this.state.fileText} saveTicketData={this.saveTicketData}></TextFileProcessing>}
         {this.state.showPDFFileProcessing && <PDFFileProcessing file={this.state.filePDF} saveTicketData={this.saveTicketData}></PDFFileProcessing>}
         {this.state.showTickets && <ListTicketPosts ticketPosts={ticketPosts} modifyTicketPost={this.modifyTicketPost}></ListTicketPosts>}
       </div>
@@ -189,7 +188,7 @@ class fileProcessingComponent extends React.Component {
 
 fileProcessingComponent.defaultProps = {
   showForm: true,
-  showFileProcessing: false,
+  showPDFFileProcessing: false,
   showTickets: false,
   ticketPosts: []
 };

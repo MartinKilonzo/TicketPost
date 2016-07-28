@@ -10,6 +10,8 @@ class TextFileProcessingComponent extends React.Component {
       tickets: props.tickets
     };
     this.parseTextFile = this.parseTextFile.bind(this);
+  }
+  componentWillMount() {
     this.parseTextFile();
   }
   parseTextFile() {

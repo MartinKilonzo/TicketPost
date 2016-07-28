@@ -1,6 +1,6 @@
 var appRouter = app => {
   app.get('/', (req, res) => {
-    res.send('Welcome');
+    res.send({text: 'no'});
   });
   app.get('/PDFProcessing', (req, res) => {
     if (typeof req.query.pdfs !== 'undefined') {
