@@ -24,7 +24,7 @@ const configs = {
   dist: require(path.join(__dirname, 'cfg/dist')),
   test: require(path.join(__dirname, 'cfg/test')),
   apiBase: require(path.join(__dirname, 'cfg/api/base')),
-  host: require(path.join(__dirname, 'cfg/api/api'))
+  host: require(path.join(__dirname, 'cfg/api/host'))
 };
 
 /**
