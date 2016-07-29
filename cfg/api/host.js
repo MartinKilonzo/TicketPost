@@ -8,8 +8,11 @@ let defaultSettings = require('../defaults');
 // Add needed plugins here
 let BowerWebpackPlugin = require('bower-webpack-plugin');
 
+const port =defaultSettings.port + 1;
+
 let config = Object.assign({}, baseConfig, {
   entry: [
+    'webpack-dev-server/client?http://127.0.0.1:' + port,
     './server/app.js'
   ],
   cache: true,
@@ -19,8 +22,15 @@ let config = Object.assign({}, baseConfig, {
     new webpack.NoErrorsPlugin(),
     new BowerWebpackPlugin({
       searchResolveModulesDirectories: false
+    }),
+    new webpack.BannerPlugin('require(\'source-map-support\').install();', {
+      raw: true,
+      entryOnly: false
     })
   ],
+  proxy: {
+    '*': 'http://localhost:' + port
+  },
   module: defaultSettings.getDefaultModules()
 });
 

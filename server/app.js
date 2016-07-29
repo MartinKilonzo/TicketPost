@@ -13,7 +13,7 @@ var api = function(port) {
   }));
   app.use('/routes', (req, res) => {
     httpProxy.web(req, res, {
-      target: 'http://localhost:8000'
+      target: 'http://localhost:8001'
     });
   });
 
