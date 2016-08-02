@@ -18,10 +18,14 @@ class PDFProcessingComponent extends React.Component {
     this.processPDFs();
   }
   processPDFs() {
-    console.debug(this.state.files);
     const fileList = this.state.files;
-    let pdfQuery = new PDFQuery(fileList);
-    pdfQuery.send().then((result) => {
+    //TODO Send each file individually
+    let promises = [];
+    for (var iFile = 0; iFile < fileList.length; iFile++) {
+      let file = fileList[iFile];
+      promises.push(new PDFQuery(file).send());
+    }
+    Promise.all(promises).then((result) => {
       console.debug(result);
     }).catch((error) => {
       console.error('Oh No!', error);

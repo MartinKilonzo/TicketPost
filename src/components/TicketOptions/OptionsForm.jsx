@@ -42,9 +42,10 @@ class OptionsFormComponent extends React.Component {
     let formData = {};
     for (var fieldName in this.state) {
       let field = this.state[fieldName];
-      if (typeof field === 'undefined' || field.validationState !== 'success') {
-        return;
-      }
+      //TODO: MAKE SURE TO RESTORE THIS FILE TYPE CHECK!!!
+      // if (typeof field === 'undefined' || field.validationState !== 'success') {
+      //   return;
+      // }
       formData[fieldName] = field.value;
     }
     this.props.saveForm(formData);
