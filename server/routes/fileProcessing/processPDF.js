@@ -2,21 +2,20 @@
 const fs = require('fs');
 const PDFParser = require('pdf2json');
 
-let processPDF = (file) => {
+let processPDF = (fileList) => {
   return new Promise((resolve, reject) => {
-    let pdfParser = new PDFParser();
-      try {
-        console.log(file);
-        pdfParser.parseBuffer(file);
-        console.log('win');
-        return resolve('success');
-      } catch (e) {
-        reject(e);
-      }
-    // req.busboy.on('file', (fieldName, file, fileName, encoding, mimetype) => {
-    //   console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
-    //   console.log('hooray x2');
-    // });
+    let data = [];
+    for (var file in fileList) {
+      let pdfParser = new PDFParser();
+      pdfParser.on('pdfParser_dataError', errData => reject({message: errData.parserError}) );
+      pdfParser.on('pdfParser_dataReady', pdfData => {
+          data.push(pdfData.formImage.Pages);
+          if(data.length === fileList.length) {
+            resolve({message: 'success', data: data});
+          }
+      });
+      pdfParser.parseBuffer(fileList[file].buffer);
+    }
   });
 };
 

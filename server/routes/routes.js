@@ -1,5 +1,31 @@
 const router = require('express').Router();
+const multer = require('multer');
+
 const processPDF = require('./fileProcessing/processPDF.js');
+
+//TODO: Configure limit parameters
+// const pdfLimits = multer.limits({
+//   fileSize: 20 * 1024 * 1024
+// });
+const pdfStorage = multer.memoryStorage();
+// const pdfStorage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './server/routes/fileProcessing/storage/')
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.fieldname + '-' + Date.now() + '.pdf')
+//   }
+// });
+const pdfFilter = (req, file, cb) => {
+  if (file.mimetype !== 'application/pdf') cb(null, false);
+  if (file.size > 20 * 1024 * 1024) cb(null, false);
+  cb(null, true);
+};
+const upload = multer({
+  // limits: pdfLimits,
+  storage: pdfStorage,
+  fileFilter: pdfFilter
+});
 
 router.get('/', (req, res) => {
   res.send({
@@ -12,10 +38,10 @@ router.get('/api', (req, res) => {
   });
 });
 
-router.post('/PDFProcessing', (req, res) => {
-  processPDF(req.body)
+router.post('/PDFProcessing', upload.any(), (req, res) => {
+  processPDF(req.files)
     .then(result => {
-      res.status(200).send(result);
+      res.send(result);
     })
     .catch(error => {
       console.log('err', error);

@@ -38,7 +38,7 @@ let Query = function(requestType, endpoint, query) {
     return new Promise(function(resolve, reject) {
       let xhr = new XMLHttpRequest();
       xhr.open(requestType, xhrOptions.uri, false);
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      // xhr.setRequestHeader('Content-Type', 'multipart/form-data');
       xhr.setRequestHeader('Accept', 'application/json');
       xhr.onload = function onLoad() {
         if (this.status == 429) {
