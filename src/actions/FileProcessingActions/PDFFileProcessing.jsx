@@ -9,6 +9,7 @@ import PDFQuery from './PDFQuery.jsx';
 class PDFProcessingComponent extends React.Component {
   constructor(props) {
     super(props);
+    // TODO: Send event and vanue data to the API
     this.state = {
       files: props.file
     };
@@ -23,6 +24,17 @@ class PDFProcessingComponent extends React.Component {
     pdfQuery.send()
     .then((result) => {
       console.debug(result);
+      //TODO: Assign each file to each set of data, keeping in mind some files contain multiple tickets
+      let data = [];
+      let fileNumber = 0;
+      result.data.forEach(file => {
+        file.forEach(ticket => {
+          ticket.file = this.state.files[fileNumber];
+          data.push(ticket);
+        });
+        fileNumber++;
+      });
+      this.props.saveTicketData(data);
     }).catch((error) => {
       console.error('Oh No!', error);
     });

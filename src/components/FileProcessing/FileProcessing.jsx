@@ -26,7 +26,7 @@ class fileProcessingComponent extends React.Component {
     };
     this.saveForm = this.saveForm.bind(this);
     this.saveTicketData = this.saveTicketData.bind(this);
-    this.cleanTicketData = this.cleanTicketData.bind(this);
+    this.createTicketGroups = this.createTicketGroups.bind(this);
     this.createTicketGroups = this.createTicketGroups.bind(this);
   }
   /**
@@ -43,47 +43,42 @@ class fileProcessingComponent extends React.Component {
       toRedactOrderNumber: data.toRedactOrderNumber
     };
     // Save the new state
-    this.setState(newState, function() {
+    this.setState(newState, () => {
       // Change the view to hide the form and show the newly saved data
-      this.state.showForm = false;
-      this.state.showPDFFileProcessing = true;
-      this.state.showTickets = false;
+      this.setState({
+        showForm: false,
+        showPDFFileProcessing: true,
+        showTickets: false
+      });
     });
   }
   /**
-   * Method: Sanitizes and parses file data to create clean Ticket objects.
+   * Method: Transforms ticket data into ticket objects.
    *
    * @param {Ticket[]} data                 - The data derived from an input text file parded into Ticket Objects
    */
-  cleanTicketData(data) {
-    //TODO: Add getter and setters for each field...
-    let files = this.state.filePDF;
-    // For each data object (ie Ticket),
-    data.forEach(function forEach(ticket) {
-      // Load the name of the corresponding PDF file holding its ticket
-      // Of the form MM[MMM] D[D] YYYY {Section} {Row} {Seat}.pdf
-      ticket.fileName = ticket.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + ticket.section + ' ' + ticket.row + ' ' + ticket.seat + '.pdf';
-      // Use that file name to find the corresponding PDF given as from input
-      for (let iFile = 0; iFile < files.length; iFile++) {
-        let file = files[iFile];
-        // If there is a match, assign it
-        if (ticket.fileName === file.name) {
-          ticket.file = file;
-          break;
-        }
-      }
-      // Otherwise, alert the user that they mave have a missing or incorrectly named file
-      if (!ticket.file) {
-        // TODO: Include return to form button on alert (Forced?)
-        alert('Error matching ' + ticket.fileName + ' to a given PDF file\nPlease check that all files have are correct.');
-      }
+  createTickets(data) {
+    let Ticket = function Ticket(data) {
+      this.file = data.file; // (Redundant, but for readability purposes)
       //TODO:Check if date is before today and warn the user of that
-      ticket.date = new Date(ticket.date).toISOString(); // Convert the date per ISO 8601 formatting to be used in the TicketUtils API
-      ticket.sectionNumber = parseInt(ticket.section); // Parse the section for comparisons
-      ticket.section = ticket.section; // Save the section to be used in the TicketUtils API (Redundant, but for readability purposes)
-      ticket.row = parseInt(ticket.row); // Parse the row for comparisons
-      ticket.seat = parseInt(ticket.seat); // Parse the seat for comparisons
-      ticket.serial = parseInt(ticket.serial.replace(/\s/g, '')); // Parse the serial for comparisons, removing the space that may partition it beforehand
+      this.dateString = data.date;
+      this.date = new Date(data.date).toISOString(); // Convert the date per ISO 8601 formatting to be used in the TicketUtils API
+      this.sectionNumber = parseInt(data.section); // Parse the section for comparisons
+      this.section = data.section; // Save the section to be used in the TicketUtils API (Redundant, but for readability purposes)
+      this.row = parseInt(data.row); // Parse the row for comparisons
+      this.seat = parseInt(data.seat); // Parse the seat for comparisons
+      this.serial = parseInt(data.serial.replace(/\s/g, '')); // Parse the serial for comparisons, removing the space that may partition it beforehand
+      return this;
+    };
+
+    //TODO: Add getter and setters for each field
+    let tickets = [];
+    // For each data object (ie Ticket),
+    data.forEach(ticketData => {
+      tickets.push(new Ticket(ticketData));
+    });
+    this.setState({tickets: tickets}, () => {
+      this.createTicketGroups(tickets);
     });
   }
   /**
@@ -92,6 +87,7 @@ class fileProcessingComponent extends React.Component {
    * @param {Ticket[]} data                 - The cleaned data in the form of Ticket Objects
    */
   createTicketGroups(data) {
+    console.log(data);
     // Define the constructor for TicketPosts
     let TicketPost = function TicketPost(ticketGroup) {
       this.date = ticketGroup[0].date;
@@ -140,12 +136,19 @@ class fileProcessingComponent extends React.Component {
     ticketPosts.forEach(function getEvent(ticketPost) {
       promises.push(new EventQuery(ticketPost.date, ticketPost.venue).send());
     });
-    const state = this;
-    Promise.all(promises).then(function success(results) {
+    Promise.all(promises).then(results => {
       results.forEach(function saveEvent(result, key) {
         ticketPosts[key].event = result.Items[0];
       });
-      state.setState({ticketPosts: ticketPosts}); // Save the newly generated TicketPosts to the state
+      console.log(ticketPosts);
+      this.setState({ticketPosts: ticketPosts}, () => {
+        // Change the view to hide the form and show the newly created ticket groups
+        this.setState({
+          showForm: false,
+          showPDFFileProcessing: false,
+          showTickets: true
+        });
+      }); // Save the newly generated TicketPosts to the state
     }).catch(function error(err) {
       console.error('ERROR', err);
       //TODO: Alert user about error (color ticketPost red); create error components for ticketpost and use those (dimmed with error message)
@@ -157,8 +160,7 @@ class fileProcessingComponent extends React.Component {
    * @param {Ticket[]} data                 - The dirty data in the form of Ticket Objects (parsed from an input file)
    */
   saveTicketData(data) {
-    this.cleanTicketData(data); // Prepare the data for processing
-    this.createTicketGroups(data); // Reorganize that data into groups
+    this.createTickets(data); // Create the tickets and ticket groups
   }
   modifyTicketPost(newTicketPost) {
     //TODO: PLACEHOLDER - Modify tickets

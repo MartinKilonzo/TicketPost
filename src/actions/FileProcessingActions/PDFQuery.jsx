@@ -5,9 +5,6 @@ let PDFQuery = function PDFQuery(fileList) {
   for (var i = 0; i < fileList.length; i++) {
     query.append('file' + i, fileList[i]);
   }
-  for (var item of query.values()) {
-    console.debug(item);
-  }
   const endpoint = '/PDFProcessing';
   return new TicketAPI.Query('POST', endpoint, query);
 };
