@@ -10,6 +10,7 @@ import {
   HelpBlock
 } from 'react-bootstrap';
 
+import EventField from './EventField.jsx';
 import RedactionField from './RedactionField.jsx';
 import FileField from './FileField.jsx';
 
@@ -68,6 +69,7 @@ class OptionsFormComponent extends React.Component {
     return (
       <div className="container">
         <Form horizontal onSubmit={this.submitForm}>
+          <EventField></EventField>
           <RedactionField controlId='redact' updateForm={this.updateForm}></RedactionField>
           <FileField {...PDFField} updateForm={this.updateForm}></FileField>
           <FormGroup>

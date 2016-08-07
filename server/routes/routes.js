@@ -1,3 +1,5 @@
+'use strict';
+
 const router = require('express').Router();
 const multer = require('multer');
 
@@ -39,9 +41,18 @@ router.get('/api', (req, res) => {
 });
 
 router.post('/PDFProcessing', upload.any(), (req, res) => {
-  processPDF(req.files)
+  let ticketType = {};//req.body.ticketType;
+  ticketType = {venue: 'Rogers Centre', ticketEvent: 'Blue Jays'};
+  for (var field in ticketType) {
+    ticketType[field] = ticketType[field].replace(' ', '');
+  }
+  console.log(ticketType);
+  processPDF.parsePDF(req.files)
     .then(result => {
-      res.send(result);
+      return processPDF.getData(result.data, ticketType);
+    })
+    .then(data => {
+      res.send(data);
     })
     .catch(error => {
       console.log('err', error);
