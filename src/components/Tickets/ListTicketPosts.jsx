@@ -63,15 +63,16 @@ class ListTicketPostsComponent extends React.Component {
           <Row>
             {props.ticketPosts.map((ticketPost, key) => {
               let comparableTicketPost;
-              if (key === this.props.ticketPosts.length - 1) {
+              if (key < this.props.ticketPosts.length - 1) {
                 // If this element is the last element (or only), compare it to the previous element instead of the next one
-                comparableTicketPost = this.props.ticketPosts[key - 1];
-
-              } else {
-                // For every other element in the list, compare it with the previous
                 comparableTicketPost = this.props.ticketPosts[key + 1];
               }
-              if (ticketPost.date !== comparableTicketPost.date || ticketPost.event.Name !== comparableTicketPost.event.Name) {
+              else {
+                // To prevent index out of bounds error
+                comparableTicketPost = this.props.ticketPosts[key - 1];
+              }
+              // If its the last ticketPost, or one in the list and the date or the event doesnt match the next ticketPost, create a filter for this grouping of ticketPosts:
+              if (key === this.props.ticketPosts.length - 1 || ticketPost.date !== comparableTicketPost.date || ticketPost.event.Name !== comparableTicketPost.event.Name) {
                 let setTicketFilter = component.setTicketFilter.bind(this, ticketPost);
                 return (
                   <Button key={key} onClick={setTicketFilter} style={postGroupsButtonStyle} vertical block>
