@@ -42,6 +42,11 @@ class ListTicketPostsComponent extends React.Component {
     const component = this;
     return (
       <div>
+        <div className="index">
+          <div className="notice">
+            <h2>Ticket Groups</h2>
+          </div>
+        </div>
         <Col xs={3}>
           <Row>
             <Col md={6} mdOffset={3}>
@@ -56,18 +61,24 @@ class ListTicketPostsComponent extends React.Component {
             <Button onClick={this.resetFilters} vertical block>Show All</Button>
           </Row>
           <Row>
-            {props.ticketPosts.map(function map(ticketPost, key) {
-              if (key > 0) {
-                const prevTicketPost = props.ticketPosts[key - 1];
-                if (ticketPost.date !== prevTicketPost.date || ticketPost.event.Name !== prevTicketPost.event.Name) {
-                  let setTicketFilter = component.setTicketFilter.bind(this, ticketPost);
-                  return (
-                    <Button key={key} onClick={setTicketFilter} style={postGroupsButtonStyle} vertical block>
-                      {ticketPost.event.Name}
-                      <Date date={ticketPost.date}></Date>
-                    </Button>
-                  );
-                }
+            {props.ticketPosts.map((ticketPost, key) => {
+              let comparableTicketPost;
+              if (key === this.props.ticketPosts.length - 1) {
+                // If this element is the last element (or only), compare it to the previous element instead of the next one
+                comparableTicketPost = this.props.ticketPosts[key - 1];
+
+              } else {
+                // For every other element in the list, compare it with the previous
+                comparableTicketPost = this.props.ticketPosts[key + 1];
+              }
+              if (ticketPost.date !== comparableTicketPost.date || ticketPost.event.Name !== comparableTicketPost.event.Name) {
+                let setTicketFilter = component.setTicketFilter.bind(this, ticketPost);
+                return (
+                  <Button key={key} onClick={setTicketFilter} style={postGroupsButtonStyle} vertical block>
+                    {ticketPost.event.Name}
+                    <Date date={ticketPost.date}></Date>
+                  </Button>
+                );
               }
             })}
           </Row>
