@@ -10,6 +10,7 @@ let getTicketData = (PDFDataList, ticketType) => {
       const format = require('./DataFormats/Venues/' + ticketType.venue + '/' + ticketType.ticketEvent + '.js');
       let result = [];
       for (var pdf in PDFDataList) {
+        console.log('\t Processing File %s of %s', pdf, PDFDataList.length);
         result[pdf] = [];
         let ticketSet = PDFDataList[pdf];
         for (var ticket in ticketSet) {
@@ -46,22 +47,34 @@ let getTicketData = (PDFDataList, ticketType) => {
               }
             });
             result[pdf][ticket][field] = matchedValue;
+            if (!result[pdf]) console.log(pdf, result[pdf]);
           }
           // TODO: Compare headers of various sizes when no close match is found
           // Check to make sure all fields have data
           for (var data in format) {
-            if (typeof dataValues[data] === 'undefined') reject({message: 'Error: Missing Field Data \'' + data + '.\''});
+            if (typeof dataValues[data] === 'undefined') reject({
+              message: 'Error: Missing Field Data \'' + data + '.\''
+            });
           }
         }
       }
-      resolve({message: 'success', data: result});
+      // result.forEach(file => {
+      //   console.log(file);
+      // })
+      resolve({
+        message: 'success',
+        data: result
+      });
     } catch (e) {
-      reject({message: 'Sorry! That event is not supported just yet.', data: e});
+      reject({
+        message: 'Sorry! That event is not supported just yet.',
+        data: e
+      });
     }
   });
 }
 
-let getDistance = (start, end ) => {
+let getDistance = (start, end) => {
   return Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y));
 };
 

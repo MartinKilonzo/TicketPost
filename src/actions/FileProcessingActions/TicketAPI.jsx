@@ -25,7 +25,7 @@ let generateUserToken = function generateUserToken(key, secret) {
   return 'Bearer ' + enc.Base64.stringify(key + ':' + secret);
 };
 
-let Query = function(requestType, endpoint, query) {
+let Query = function(requestType, endpoint, query, progressListener) {
   this.query = query;
   this.endpoint = endpoint;
   this.uri = host + this.endpoint;
@@ -33,10 +33,12 @@ let Query = function(requestType, endpoint, query) {
   this.send = function send() {
     let xhrOptions = {
       uri: this.uri,
-      query: this.query
+      query: this.query,
+      progressListener: progressListener
     };
     return new Promise(function(resolve, reject) {
       let xhr = new XMLHttpRequest();
+      xhr.addEventListener('load', xhrOptions.progressListener);
       xhr.open(requestType, xhrOptions.uri, false);
       // xhr.setRequestHeader('Content-Type', 'multipart/form-data');
       xhr.setRequestHeader('Accept', 'application/json');
@@ -52,7 +54,7 @@ let Query = function(requestType, endpoint, query) {
         }
       };
       if (typeof xhrOptions.query !== 'undefined') {
-        xhr.send(xhrOptions.query)
+        xhr.send(xhrOptions.query);
       } else {
         xhr.send();
       }

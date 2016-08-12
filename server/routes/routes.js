@@ -41,17 +41,24 @@ router.get('/api', (req, res) => {
 });
 
 router.post('/PDFProcessing', upload.any(), (req, res) => {
-  let ticketType = {};//req.body.ticketType;
-  ticketType = {venue: 'Rogers Centre', ticketEvent: 'Blue Jays'};
+  let ticketType = {}; //req.body.ticketType;
+  ticketType = {
+    venue: 'Rogers Centre',
+    ticketEvent: 'Blue Jays'
+  };
   for (var field in ticketType) {
     ticketType[field] = ticketType[field].replace(' ', '');
   }
-  console.log(ticketType);
+  console.log('Beginning JSON conversion...');
   processPDF.parsePDF(req.files)
     .then(result => {
+      console.log('Finished JSON conversion.');
+      console.log('Beginning Parsing...');
       return processPDF.getData(result.data, ticketType);
     })
     .then(data => {
+      console.log('Finished parsing.');
+      console.log('sending results!');
       res.send(data);
     })
     .catch(error => {
