@@ -49,21 +49,70 @@ router.post('/PDFProcessing', upload.any(), (req, res) => {
   for (var field in ticketType) {
     ticketType[field] = ticketType[field].replace(' ', '');
   }
-  console.log('Beginning JSON conversion...');
+  console.log('Beginning File Parsing...');
   processPDF.parsePDF(req.files)
     .then(result => {
-      console.log('Finished JSON conversion.');
-      console.log('Beginning Parsing...');
+      console.log('Finished File Parsing.');
+      console.log('Beginning Data Extraction...');
       return processPDF.getData(result.data, ticketType);
     })
     .then(data => {
-      console.log('Finished parsing.');
+      console.log('Finished Data Extraction.');
       console.log('sending results!');
       res.send(data);
     })
     .catch(error => {
       console.log('err', error);
-      res.status(500).send(error);
+      res.status(error.status || 500).send(error);
+    });
+});
+
+router.post('/Test/ParsePDF', upload.any(), (req, res) => {
+  let ticketType = {}; //req.body.ticketType;
+  ticketType = {
+    venue: 'Rogers Centre',
+    ticketEvent: 'Blue Jays'
+  };
+  for (var field in ticketType) {
+    ticketType[field] = ticketType[field].replace(' ', '');
+  }
+  console.log('Beginning File Parsing...');
+  processPDF.parsePDF(req.files)
+    .then(result => {
+      console.log('Finished File Parsing.');
+      console.log('Beginning Data Extraction...');
+      res.send(result);
+    })
+    .catch(error => {
+      console.log('err', error);
+      res.status(error.status || 500).send(error);
+    });
+});
+
+router.post('/Test/GetData', upload.any(), (req, res) => {
+  let ticketType = {}; //req.body.ticketType;
+  ticketType = {
+    venue: 'Rogers Centre',
+    ticketEvent: 'Blue Jays'
+  };
+  for (var field in ticketType) {
+    ticketType[field] = ticketType[field].replace(' ', '');
+  }
+  console.log('Beginning File Parsing...');
+  processPDF.parsePDF(req.files)
+    .then(result => {
+      console.log('Finished File Parsing.');
+      console.log('Beginning Data Extraction...');
+      return processPDF.getData(result.data, ticketType);
+    })
+    .then(data => {
+      console.log('Finished Data Extraction.');
+      console.log('sending results!');
+      res.send(data);
+    })
+    .catch(error => {
+      console.log('err', error);
+      res.status(error.status || 500).send(error);
     });
 });
 

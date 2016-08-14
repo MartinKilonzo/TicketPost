@@ -5,6 +5,7 @@ import React from 'react';
 import {Button, Col} from 'react-bootstrap';
 
 import PDFQuery from './PDFQuery.jsx';
+import tPDFQuery from './Test/TestPDFQuery.jsx';
 
 class PDFProcessingComponent extends React.Component {
   constructor(props) {
@@ -14,6 +15,7 @@ class PDFProcessingComponent extends React.Component {
       files: props.file
     };
     this.processPDFs = this.processPDFs.bind(this);
+    this.testParse = this.testParse.bind(this);
   }
   componentWillMount() {
     this.processPDFs();
@@ -51,6 +53,27 @@ class PDFProcessingComponent extends React.Component {
       //TODO: Assign each file to each set of data, keeping in mind some files contain multiple tickets
       this.props.saveTicketData(data);
     }).catch(error => {
+      console.error('Oh No!', error);
+    });
+  }
+  testParse() {
+    const fileList = this.state.files;
+    let pdfQuery = new tPDFQuery(fileList, (response) => {
+      console.log('progress?', response, this);
+    });
+    pdfQuery.send().then((result) => {
+      console.debug(result);
+      //TODO: Assign each file to each set of data, keeping in mind some files contain multiple tickets
+      let data = [];
+      let fileNumber = 0;
+      result.data.forEach(file => {
+        file.forEach(ticket => {
+          ticket.file = this.state.files[fileNumber];
+          data.push(ticket);
+        });
+        fileNumber++;
+      });
+    }).catch((error) => {
       console.error('Oh No!', error);
     });
   }
@@ -95,6 +118,9 @@ class PDFProcessingComponent extends React.Component {
         <div className="container" style={buttonStyle}>
           <Col xs={2} smOffset={5}>
             <Button bsStyle="default" bsSize="large" onClick={this.processPDFs} block>Process PDFs</Button>
+          </Col>
+          <Col xs={2} smOffset={5}>
+            <Button bsStyle="default" bsSize="large" onClick={this.testParse} block>Test Parse</Button>
           </Col>
         </div>
       </div>

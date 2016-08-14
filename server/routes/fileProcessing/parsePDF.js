@@ -7,15 +7,15 @@ let parsePDF = (fileList) => {
     let promises = [];
     let fileDataList = [];
     for (var file in fileList) {
-      console.log('\t Processing File %s of %s', file, fileList.length);
+      console.log(`\t Processing File ${ file } of ${ fileList.length}`);
       promises.push(parse(fileList[file]));
     }
     Promise.all(promises)
-    .then(result => {
-      result.forEach(file => {
+    .then(results => {
+      results.forEach(file => {
         fileDataList[file.index] = file.data;
       })
-      resolve({message: 'succes', data: fileDataList});
+      resolve({message: 'success', data: fileDataList});
     })
     .catch(error => {
       reject(error);
@@ -33,7 +33,9 @@ let parse = file => {
       // Save only the textual data
       let textData = [];
       for (var page in pdfData.formImage.Pages) {
-        textData.push(pdfData.formImage.Pages[page].Texts)
+        const texts = pdfData.formImage.Pages[page].Texts;
+        if (texts.length === 0) reject({status: 400, message: 'Invalid PDF.'});
+        textData.push(texts)
       }
       const fileIndex = file.fieldname.replace('file', '');
       resolve({index: fileIndex, data: textData});

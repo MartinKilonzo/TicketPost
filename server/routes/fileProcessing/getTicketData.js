@@ -10,7 +10,7 @@ let getTicketData = (PDFDataList, ticketType) => {
       const format = require('./DataFormats/Venues/' + ticketType.venue + '/' + ticketType.ticketEvent + '.js');
       let result = [];
       for (var pdf in PDFDataList) {
-        console.log('\t Processing File %s of %s', pdf, PDFDataList.length);
+        console.log(`\t Processing File ${ pdf } of ${ PDFDataList.length}`);
         result[pdf] = [];
         let ticketSet = PDFDataList[pdf];
         for (var ticket in ticketSet) {
