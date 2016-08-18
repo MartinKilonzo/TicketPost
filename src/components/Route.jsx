@@ -1,7 +1,7 @@
 import React from 'react';
 import {Router, Route, hashHistory, IndexRoute} from 'react-router';
 
-import Introduction from './Introduction.jsx';
+import Introduction from './Home/Introduction.jsx';
 import TicketOptions from './TicketOptions/TicketOptions.jsx';
 import FileProcessing from './FileProcessing/FileProcessing.jsx';
 

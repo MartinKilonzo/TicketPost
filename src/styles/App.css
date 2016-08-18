@@ -5,6 +5,7 @@ body {
 }
 
 .index img {
+  position: static;
   margin: 40px auto;
   border-radius: 4px;
   background: #fff;
@@ -12,6 +13,7 @@ body {
 }
 
 .index .notice {
+  top: 56px;
   margin: 20px auto;
   padding: 15px 0;
   text-align: center;
@@ -20,4 +22,12 @@ body {
 
 .formLabel {
   text-align: right;
+}
+
+a, a:active, a:hover, a:focus, a:visited {
+  color: inherit;
+  text-decoration: inherit;
+  outline-color: inherit;
+  outline-style: inherit;
+  outline-width: inherit;
 }
