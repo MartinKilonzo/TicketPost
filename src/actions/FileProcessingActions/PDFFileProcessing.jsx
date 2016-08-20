@@ -83,7 +83,7 @@ class PDFProcessingComponent extends React.Component {
       console.log('progress?', response, this);
     });
     pdfQuery.send().then((result) => {
-      console.debug(result);
+      // console.debug('From API:', result);
       //TODO: Assign each file to each set of data, keeping in mind some files contain multiple tickets
       let data = [];
       let fileNumber = 0;
@@ -94,6 +94,7 @@ class PDFProcessingComponent extends React.Component {
         });
         fileNumber++;
       });
+      // console.debug('Ticket data', data);
       this.props.saveTicketData(data);
     }).catch((error) => {
       console.error('Oh No!', error);

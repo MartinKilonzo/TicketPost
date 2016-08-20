@@ -1,4 +1,13 @@
 import TicketUtils from './TicketUtils.jsx';
+
+let flagsToString = (flags) => {
+  let str = '';
+  for (var flag in flags) {
+    str += flag + '\n'
+  }
+  return str.slice(0, str.length - 1);
+}
+
 let Ticket = function Ticket(ticketPost) {
   this.Event = ticketPost.event.Name;
   this.EventDate = ticketPost.event.Date;
@@ -32,7 +41,8 @@ let Ticket = function Ticket(ticketPost) {
     InHandDate: '' //In Hand Date in ISO 8601 Format (Ex. 2013-0621T05:32:07) Required if InHandStatus is (1)
   };
   this.Notes = ''; // Public Note
-  this.InternalNotes = 'Mike'; // Private Note
+  console.log(ticketPost);
+  this.InternalNotes = flagsToString(ticketPost.flags); // Private Note
   this.BrokerNotes = ''; // Broker Note
   this.SplitOption = 1; // Splitting options of your tickets: Any = 0, Multiples of = 1, Avoid 1 = 2, No Splits = 3
   this.Splits = 0; // Required if SplitOption is Multiples of (1)

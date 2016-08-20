@@ -1,6 +1,5 @@
 'use strict';
 const sortData = require('./mergeSort.js');
-const flags = require('./DataFormats/Flags.js');
 
 // const DataFormats = require('./DataFormats/DataFormats');
 
@@ -9,6 +8,7 @@ let getTicketData = (PDFDataList, ticketType) => {
     // const format = DataFormats[ticketType.venue][ticketType.ticketEvent];
     try {
       const format = require('./DataFormats/Venues/' + ticketType.venue + '/' + ticketType.ticketEvent + '.js');
+      const flags = require('./DataFormats/Venues/' + ticketType.venue + '/Flags.js');
       let result = [];
       for (var pdf in PDFDataList) {
         console.log(`\t Processing File ${ pdf } of ${ PDFDataList.length}`);
@@ -63,9 +63,12 @@ let getTicketData = (PDFDataList, ticketType) => {
           // TODO: Compare headers of various sizes when no close match is found
           // Check to make sure all fields have data
           for (var data in format) {
-            if (typeof dataValues[data] === 'undefined') reject({
-              message: 'Error: Missing Field Data \'' + data + '.\''
-            });
+            const dataType = typeof dataValues[data][0];
+            if (dataType === 'undefined' || dataType.length === 0) {
+              reject({
+                message: 'Error: Cannot find: \'' + data + '.\''
+              });
+            }
           }
         }
       }

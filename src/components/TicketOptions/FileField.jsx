@@ -67,7 +67,7 @@ class FileFieldComponent extends React.Component {
       },
       label: {
         marginTop: '5px',
-        textAlign: 'center',
+        textAlign: 'left',
         color: colors.base,
         lineHeight: '18px',
         fontWeight: 300
@@ -87,9 +87,6 @@ class FileFieldComponent extends React.Component {
         color: colors.dark,
         fontFamily: 'Roboto, sans-serif',
         cursor: 'pointer'
-      },
-      feedback: {
-
       }
     }
     return (

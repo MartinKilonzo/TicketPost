@@ -57,7 +57,7 @@ class RedactionFormFieldComponent extends React.Component {
         margin: '0 0 0 0',
       },
       label: {
-        textAlign: 'center',
+        textAlign: 'left',
         color: colors.base,
         lineHeight: '18px',
         fontWeight: 300

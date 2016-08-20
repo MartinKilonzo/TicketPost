@@ -68,7 +68,9 @@ class fileProcessingComponent extends React.Component {
       this.row = parseInt(data.row); // Parse the row for comparisons
       this.seat = parseInt(data.seat); // Parse the seat for comparisons
       this.serial = parseInt(data.serial.replace(/\s/g, '')); // Parse the serial for comparisons, removing the space that may partition it beforehand
-      return this;
+      this.flags = {
+        obstructedView: data.obstructedView
+      }
     };
 
     //TODO: Add getter and setters for each field
@@ -102,11 +104,18 @@ class fileProcessingComponent extends React.Component {
         state: 'ON',
         city: 'Toronto'
       };
+      this.flags = {};
+      ticketGroup.forEach(ticket => {
+        for (var flag in ticket.flags) {
+          if (ticket.flags[flag]) this.flags[flag] = ticket.flags[flag];
+        }
+      });
     };
     // Group the tickets
     let ticketList = [];
     let ticketPosts = [];
     // Go through each ticket, ordered in ascending order beforehand,
+    //TODO: Split tickets by flags
     for (var iTicket = 0; iTicket < data.length - 1; iTicket++) {
       let ticket = data[iTicket];
       let nextTicket = data[iTicket + 1];

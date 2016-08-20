@@ -9,18 +9,8 @@ import UploadTicket from './UploadTickets.jsx';
 class TicketPostComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      event: props.data.event,
-      date: props.data.date,
-      section: props.data.section,
-      row: props.data.row,
-      start: props.data.start,
-      count: props.data.count,
-      tickets: props.data.tickets,
-      // fileName: props.data.fileName, Depreciated.
-      // file: props.data.file, Depreciated.
-      showMoreDetails: props.showMoreDetails
-    };
+    this.state = props.data;
+    this.state.showMoreDetails = props.showMoreDetails;
     this.changeView = this.changeView.bind(this);
     this.saveChanges = this.saveChanges.bind(this);
     this.submitTickets = this.submitTickets.bind(this);
