@@ -1,11 +1,7 @@
 import React from 'react';
 import Update from 'react-addons-update';
 //TODO: SANITIZE INPUTS
-import {
-  Form,
-  FormGroup,
-  Button
-} from 'react-bootstrap';
+import {Form, FormGroup, Button} from 'react-bootstrap';
 
 import FormField from './FormField.jsx';
 import EventField from './EventField.jsx';
@@ -18,9 +14,7 @@ class OptionsFormComponent extends React.Component {
     super(props);
     this.state = {
       redact: props.redact,
-      toRedact: props.toRedact,
-      filePDF: props.filePDF,
-      formId: props.formId
+      filePDF: props.filePDF
     };
     this.submitForm = this.submitForm.bind(this);
     this.updateForm = this.updateForm.bind(this);
@@ -73,17 +67,17 @@ class OptionsFormComponent extends React.Component {
     };
     return (
       <div className="container" style={containerStyle}>
-        <Form id={this.state.formId} horizontal onSubmit={this.submitForm}>
-          <FormField formId={this.state.formId}>
+        <Form id={this.props.formId} horizontal onSubmit={this.submitForm}>
+          <FormField formId={this.props.formId}>
             <RedactionField controlId='redact' updateForm={this.updateForm}></RedactionField>
           </FormField>
-          <FormField formId={this.state.formId}>
+          <FormField formId={this.props.formId}>
             <EventField style={fieldStyle}></EventField>
           </FormField>
-          <FormField formId={this.state.formId}>
+          <FormField formId={this.props.formId}>
             <FileField style={fieldStyle} {...PDFField} updateForm={this.updateForm}></FileField>
           </FormField>
-            <SubmitButton style={fieldStyle}></SubmitButton>
+          <SubmitButton style={fieldStyle} submit={this.submitForm}></SubmitButton>
         </Form>
       </div>
     );
@@ -93,10 +87,6 @@ class OptionsFormComponent extends React.Component {
 OptionsFormComponent.defaultProps = {
   redact: {
     value: '',
-    validationState: 'success'
-  },
-  toRedact: {
-    value: false,
     validationState: 'success'
   },
   filePDF: undefined,
@@ -142,7 +132,7 @@ class SubmitButton extends React.Component {
     };
     return (
       <FormGroup style={styles.form} onMouseEnter={this.highlightBtn} onMouseLeave={this.unHighlightBtn}>
-        <Button className="submitButton" style={styles.submitBtnStyle} type="submit" block>
+        <Button className="submitButton" style={styles.submitBtnStyle} type="submit" onClick={this.props.submit} block>
           <h4 style={styles.labelStyle}>Process</h4>
         </Button>
       </FormGroup>

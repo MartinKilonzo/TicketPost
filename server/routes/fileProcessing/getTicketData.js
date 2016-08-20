@@ -1,5 +1,6 @@
 'use strict';
 const sortData = require('./mergeSort.js');
+const flags = require('./DataFormats/Flags.js');
 
 // const DataFormats = require('./DataFormats/DataFormats');
 
@@ -33,6 +34,12 @@ let getTicketData = (PDFDataList, ticketType) => {
               if (text.match(header)) dataHeaders[data].push(textField);
               if (text.match(value)) dataValues[data].push(textField);
             }
+
+            // Also look for flagged attributes that are important to the ticket
+            for (var flag in flags) {
+              const flagText = flags[flag].label;
+              if (text.match(flagText)) result[pdf][ticket][flag] = true;
+            }
           });
           // Pick the value closest to the large header text as the correct value
           for (var field in dataValues) {
@@ -48,6 +55,10 @@ let getTicketData = (PDFDataList, ticketType) => {
             });
             result[pdf][ticket][field] = matchedValue;
             if (!result[pdf]) console.log(pdf, result[pdf]);
+          }
+          //Finally, check to see if any flags have been found in order to set the false flags:
+          for (var flag in flags) {
+            if (!result[pdf][ticket][flag]) result[pdf][ticket][flag] = false;
           }
           // TODO: Compare headers of various sizes when no close match is found
           // Check to make sure all fields have data

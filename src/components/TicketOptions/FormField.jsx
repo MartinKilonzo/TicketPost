@@ -5,16 +5,14 @@ import colors from '../Home/colors.jsx';
 class FormFieldComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      formId: props.formId
-    };
+    this.state = {};
     this.highlightField = this.highlightField.bind(this);
   }
   highlightField(event) {
     let parent = event.target;
     let target = parent;
     // Climb up the DOM until we reach the form element aka the parent of the desired formField div
-    while (parent.id !== this.state.formId) {
+    while (parent.id !== this.props.formId) {
       target = parent;
       parent = parent.parentElement;
     }
