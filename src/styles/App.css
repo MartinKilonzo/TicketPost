@@ -1,9 +1,9 @@
 /* Base Application Styles */
+
 body {
   color: #222;
   background: #fff;
 }
-
 .index img {
   position: static;
   margin: 40px auto;
@@ -11,7 +11,6 @@ body {
   background: #fff;
   display: block;
 }
-
 .index .notice {
   top: 56px;
   margin: 20px auto;
@@ -19,11 +18,12 @@ body {
   text-align: center;
   background: #DDD;
 }
-
 .formLabel {
   text-align: right;
 }
-
+h1, h2, h3, h4 {
+  font-family: Roboto, sans-serif;
+}
 a, a:active, a:hover, a:focus, a:visited {
   color: inherit;
   text-decoration: inherit;

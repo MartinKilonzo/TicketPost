@@ -1,6 +1,5 @@
 import React from 'react';
 import animate from 'react-addons-css-transition-group';
-
 import {Button} from 'react-bootstrap';
 
 import MenuButton from './MenuButton.jsx';
@@ -59,6 +58,7 @@ class IntroductionSequence extends React.Component {
         fontFamily: 'Roboto, sans-serif',
         fontSize: '12pt',
         fontWeight: 100,
+        lineHeight: '24pt',
         cursor: 'pointer',
         userSelect: 'none'
       }

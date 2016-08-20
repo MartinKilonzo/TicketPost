@@ -2,6 +2,7 @@ import React from 'react';
 import {FormGroup, Col, InputGroup, FormControl} from 'react-bootstrap';
 
 import ToRedact from './ToRedact.jsx';
+import colors from '../Home/colors.jsx';
 
 class RedactionFormFieldComponent extends React.Component {
   constructor(props) {
@@ -37,35 +38,49 @@ class RedactionFormFieldComponent extends React.Component {
     }.bind(this));
   }
   validate() {
-    // If checked,
-    if (this.state.toRedact) {
       // If there is no text, warn the user
       if (!this.state.value) {
-        return 'warning';
+        return 'success';
       } else { // Elseif cases here can be used for 'error' flags for more advanced validation
+        //TODO: Text Validation
         return 'success';
       }
-    } else if (this.state.value) { // If not checked and there is text
-      return 'warning';
-    } else { // If unchecked and no text
-      return 'success';
-    }
   }
   render() {
+    const styles = {
+      form: {
+        display: 'inherit',
+        alignItems: 'inherit',
+        position: 'inherit',
+        height: '100%',
+        width: '100%',
+        margin: '0 0 0 0',
+      },
+      label: {
+        textAlign: 'center',
+        color: colors.base,
+        lineHeight: '18px',
+        fontWeight: 300
+      },
+      input: {
+        border: 'none',
+        boxShadow: 'none',
+        borderRadius: 0,
+        textAlign: 'center',
+        color: colors.base,
+        fontSize: '16pt',
+        fontWeight: 300
+      }
+    }
     return (
-      <FormGroup controlId={this.props.controlId} validationState={this.validate()}>
+      <FormGroup style={styles.form} controlId={this.props.controlId} validationState={this.validate()}>
         <Col sm={2} className="formLabel">
-          <b>Redaction</b>
+          <h4 style={styles.label}>Redaction</h4>
         </Col>
-        <Col sm={10}>
-          <InputGroup>
-            <InputGroup.Addon>
-              <ToRedact controlId='toRedact' updateForm={this.props.updateForm} updateField={this.toRedact}></ToRedact>
-            </InputGroup.Addon>
-            <FormControl type="text" placeholder="Text to Redact" value={this.state[this.props.controlId]} onChange={this.handleChange} disabled={!this.state.toRedact}/>
-            <FormControl.Feedback></FormControl.Feedback>
-          </InputGroup>
+        <Col sm={8}>
+          <FormControl style={styles.input} type="text" placeholder="Text to Redact" value={this.state[this.props.controlId]} onChange={this.handleChange}/>
         </Col>
+        <FormControl.Feedback></FormControl.Feedback>
       </FormGroup>
     );
   }

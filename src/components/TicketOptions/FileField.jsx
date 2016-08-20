@@ -1,10 +1,14 @@
 import React from 'react';
 import {FormGroup, Col, FormControl, HelpBlock} from 'react-bootstrap';
 
+import colors from '../Home/colors.jsx';
+
 class FileFieldComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      maxSize: props.maxSize
+    };
     this.handleChange = this.handleChange.bind(this);
     this.validate = this.validate.bind(this);
   }
@@ -15,12 +19,12 @@ class FileFieldComponent extends React.Component {
       newVal = event.target.files;
       this.setState({
         value: newVal
-      }, function callback() {
+      }, () => {
         this.props.updateForm({
           value: newVal,
           validationState: this.validate()
         }, field);
-      }.bind(this));
+      });
     }
   }
   validate() {
@@ -29,6 +33,7 @@ class FileFieldComponent extends React.Component {
     if (!this.state.value) {
       return 'error';
     }
+    let totalSize = 0;
     // Cycle through the list and check that each file is valid
     for (var iFile = 0; iFile < files.length; iFile++) {
       let file = files[iFile];
@@ -38,8 +43,8 @@ class FileFieldComponent extends React.Component {
         if (file.type === this.props.accept) {
           // If this is the case, the form is valid
           // TODO: better validation for files
-          return 'success';
-
+          totalSize += file.size;
+          if (totalSize > this.state.maxSize) return 'error';
         } else { // Otherwise, the form is invalid
           return 'error';
         }
@@ -51,21 +56,60 @@ class FileFieldComponent extends React.Component {
     return 'success';
   }
   render() {
+    const styles = {
+      form: {
+        display: 'inherit',
+        alignItems: 'inherit',
+        position: 'inherit',
+        height: '100%',
+        width: '100%',
+        margin: '0 0 0 0',
+      },
+      label: {
+        marginTop: '5px',
+        textAlign: 'center',
+        color: colors.base,
+        lineHeight: '18px',
+        fontWeight: 300
+      },
+      input: {
+        // display: 'none'
+      },
+      //TODO: Restyle the choose files button
+      inputField: {
+        display: 'none',
+        paddingTop: '10px',
+        paddingBottom: '10px',
+        paddingLeft: '10px',
+        paddingRight: '10px',
+        backgroundColor: 'white',
+        boxShadow: '0px 0px 4px ' + colors.dark,
+        color: colors.dark,
+        fontFamily: 'Roboto, sans-serif',
+        cursor: 'pointer'
+      },
+      feedback: {
+
+      }
+    }
     return (
-      <FormGroup controlId={this.props.controlId} accept={this.props.accept} validationState={this.validate()}>
+      <FormGroup style={styles.form} controlId={this.props.controlId} accept={this.props.accept} validationState={this.validate()}>
         <Col sm={2} className="formLabel">
-          <b>{this.props.label}</b>
+          <h4 style={styles.label}>{this.props.label}</h4>
         </Col>
         <Col sm={10}>
-          <FormControl type="file" onChange={this.handleChange} multiple={this.props.multiple}/>
+          <label style={styles.inputField}>Choose PDFs</label>
+          <FormControl style={styles.input} type="file" onChange={this.handleChange} multiple={this.props.multiple}/>
           <HelpBlock>{this.props.helpText}</HelpBlock>
-          <FormControl.Feedback></FormControl.Feedback>
         </Col>
+        <FormControl.Feedback style={styles.feedback}></FormControl.Feedback>
       </FormGroup>
     );
   }
 }
 
-FileFieldComponent.defaultProps = {};
+FileFieldComponent.defaultProps = {
+  maxSize: 20 * 1024 * 1024
+};
 
 export default FileFieldComponent;

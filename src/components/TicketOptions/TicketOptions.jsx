@@ -1,7 +1,9 @@
 import React from 'react';
-
-import OptionsForm from './OptionsForm.jsx';
 import Update from 'react-addons-update';
+
+import PageHeader from '../Home/PageHeader.jsx';
+import OptionsForm from './OptionsForm.jsx';
+import colors from '../Home/colors.jsx';
 
 class TicketOptions extends React.Component {
   constructor(props) {
@@ -12,12 +14,18 @@ class TicketOptions extends React.Component {
     };
   }
   render() {
+    const styles = {
+      background: {
+        position: 'absolute',
+        top: 0,
+        width: '100vw',
+        backgroundColor: colors.white
+      }
+    };
     return (
-      <div>
-        <div className="index">
-          <div className="notice">
-            <h2>Ticket Options</h2>
-          </div>
+      <div style={styles.background}>
+        <div style={styles.header}>
+          <PageHeader color={colors.base} align="left">Upload Tickets</PageHeader>
         </div>
         <OptionsForm {...this.props}/>
       </div>

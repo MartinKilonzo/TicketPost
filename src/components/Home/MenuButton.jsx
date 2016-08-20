@@ -11,27 +11,31 @@ class MenuButtonComponent extends React.Component {
     this.go = this.go.bind(this);
   }
   highlight(event) {
-    event.preventDefault();
-    console.log(this.props);
-    event.target.style.fontWeight = 400;
-    event.target.style.color = this.props.colors.base;
+    const style = event.target.style;
+    style.fontWeight = 400;
+    style.color = this.props.colors.dark;
+    event.target.style.boxShadow = '0px 1px 2px ' + this.props.colors.dark;
   }
   unHighlight(event) {
-    event.target.style.fontWeight = 300;
-    event.target.style.color = this.props.colors.light;
+    const style = event.target.style;
+    style.fontWeight = 300;
+    style.color = this.props.colors.light;
+    event.target.style.boxShadow = 'none';
   }
   showForm(event) {
-    console.log(this);
+    console.log('go!')
   }
   go() {}
   render() {
     const colors = this.props.colors;
     // const width = document.getElementById('logo').offsetWidth / 2;
     const buttonStyle = {
-      alignSelf: 'flex-start',
       height: '30px',
-      width: '50%',
+      width: '49%',
+      marginLeft: '5px',
+      marginRight: '5px',
       textAlign: 'center',
+      backgroundColor: colors.white,
       color: colors.dark,
       fontWeight: 300
     };
