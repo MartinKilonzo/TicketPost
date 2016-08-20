@@ -76,7 +76,8 @@ class fileProcessingComponent extends React.Component {
     //TODO: Add getter and setters for each field
     let tickets = [];
     // For each data object (ie Ticket),
-    data.forEach(ticketData => {
+    data.forEach((ticketData, key) => {
+      console.debug(key);
       tickets.push(new Ticket(ticketData));
     });
     this.setState({tickets: tickets}, () => {

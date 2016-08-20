@@ -62,12 +62,19 @@ let getTicketData = (PDFDataList, ticketType) => {
           }
           // TODO: Compare headers of various sizes when no close match is found
           // Check to make sure all fields have data
+          //TODO: make sure all data is formatted correctly
           for (var data in format) {
             const dataType = typeof dataValues[data][0];
             if (dataType === 'undefined' || dataType.length === 0) {
               reject({
                 message: 'Error: Cannot find: \'' + data + '.\''
               });
+            }
+            else if (data === 'date') {
+              const dateStr = result[pdf][ticket][data].slice(-3);
+              if (!dateStr.match(/\s[A-Z]{2}/gi)) {
+                result[pdf][ticket][data] = result[pdf][ticket][data].slice(0,-2) + ' ' + result[pdf][ticket][data].slice(-2);
+              }
             }
           }
         }
