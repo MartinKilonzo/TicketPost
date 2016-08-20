@@ -22,7 +22,7 @@ class FormFieldComponent extends React.Component {
     siblings.forEach((sibling) => {
       sibling.style.boxShadow = '0px 0px 2px ' + colors.dark;
     });
-    target.style.boxShadow = '0px 0px 8px 2px' + colors.light;
+    target.style.boxShadow = '0px 0px 4px 2px' + colors.light;
 
   }
   render() {
