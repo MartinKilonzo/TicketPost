@@ -202,8 +202,12 @@ var mergeLists = function mergeLists(leftList, rightList) {
   var l = 0;
   var r = 0;
   while (l < leftList.length && r < rightList.length) {
-    var lDate = Date.parse(leftList[l].ticket.date);
-    var rDate = Date.parse(rightList[r].ticket.date);
+    var lDate = leftList[l].ticket.date;
+    var rDate = rightList[r].ticket.date;
+    if (!lDate.charAt(lDate.length - 3).match(/\s/)) lDate = lDate.slice(0, -2) + ' ' + lDate.slice(-2);
+    if (!rDate.charAt(rDate.length - 3).match(/\s/)) rDate = rDate.slice(0, -2) + ' ' + rDate.slice(-2);
+    lDate = new Date(lDate);
+    rDate = new Date(rDate);
     if (lDate < rDate) {
       ret.push(leftList[l++]);
     } else if (lDate > rDate) {
@@ -216,21 +220,34 @@ var mergeLists = function mergeLists(leftList, rightList) {
       } else if (lSection > rSection) {
         ret.push(rightList[r++]);
       } else {
-        var lRow = parseInt(leftList[l].ticket.row, 10);
-        var rRow = parseInt(rightList[r].ticket.row, 10);
-        if (lRow < rRow) {
+        lSection = leftList[l].ticket.section.slice(3);
+        rSection = rightList[r].ticket.section.slice(3);
+        if (lSection < rSection) {
           ret.push(leftList[l++]);
-        } else if (lRow > rRow) {
+        } else if (lSection > rSection) {
           ret.push(rightList[r++]);
         } else {
-          var lSeat = parseInt(leftList[l].ticket.seat, 10);
-          var rSeat = parseInt(rightList[r].ticket.seat, 10);
-          if (lSeat < rSeat) {
+          var lRow = parseInt(leftList[l].ticket.row, 10);
+          var rRow = parseInt(rightList[r].ticket.row, 10);
+          if (lRow < rRow) {
             ret.push(leftList[l++]);
-          } else if (lSeat > rSeat) {
+          } else if (lRow > rRow) {
             ret.push(rightList[r++]);
           } else {
-            app.alert('Duplicate?');
+            var lSeat = parseInt(leftList[l].ticket.seat, 10);
+            var rSeat = parseInt(rightList[r].ticket.seat, 10);
+            if (lSeat < rSeat) {
+              ret.push(leftList[l++]);
+            } else if (lSeat > rSeat) {
+              ret.push(rightList[r++]);
+            } else {
+              if (DEBUG) {
+                console.println('Duplicate?');
+                return;
+              } else {
+                app.alert('Duplicate?');
+              }
+            }
           }
         }
       }
@@ -383,38 +400,42 @@ var findTextOnPage = function findTextOnPage(page, text) {
  * @param {RegExp} inputTextFormat - Optional. Field to override the object's TextId.text field for the search
  * @return {void}
  */
-TextId.prototype.getText = function getText(page, inputTextFormat) {
-  this.page = page;
-  var textFormat = inputTextFormat;
-  if (!textFormat) {
-    textFormat = this.text;
-  }
-  var n = page > 0 ? 1 : 0;
-  // If textIds are provided, test them against the text format provided,
-  // but only if they come from docs with the same word count:
-  if (getPageNumWords(page - n) === getPageNumWords(page) && this.textIds[page - n]) {
-    // Create a string using the textIds
-    var str = '';
-    for (var i = 0; i < this.textIds[page - n].length; i++) {
-      str += getPageNthWord(page, this.textIds[page - n][i], false);
-    }
-    // Test it against the format to verify it
-    var j = 0;
-    while (j < textFormat.length && str.match(textFormat[j])) {
-      // When we have reached the end, we have a match
-      if (j === textFormat.length - 1) {
-        // Given a match, set the current page IDs to match the previous's
-        this.textIds[page] = this.textIds[page - n];
-        return;
-      }
-      j++;
-    }
-    // Otherwise it failed. Fall through into the default case of searching for it manually
-  }
-  // If the textId or textFormat were not provied, or the text did not match the textFormat,
-  // search for it manually and return its finidngs
-  this.textIds[page] = findTextOnPage(page, this.text);
-};
+ TextId.prototype.getText = function getText(page, inputTextFormat) {
+   this.page = page;
+   var textFormat = inputTextFormat;
+   if (!textFormat) {
+     textFormat = this.text;
+   }
+   var lastTextIds = this.textIds[page - 1];
+   if (page > 0 && lastTextIds.length > 0 && getPageNumWords(page - 1) === getPageNumWords(page)) {
+     //TODO: Check last find against both the value and the string (label)
+     // If textIds are provided, test them against the text format provided, but only if they come from docs with the same word count:
+     if (DEBUG) {
+       console.println('Attempting to reuse word id for ' + this.text + ' ...');
+     }
+     // Use the previous page's indices to test the current pages indices for matches
+     var i = 0;
+     var str = '';
+     while (getPageNthWord(page, lastTextIds[i], false).match(textFormat[i])) {
+       str += getPageNthWord(page, lastTextIds[i], false);
+       if (i === textFormat.length - 1) {
+         if (DEBUG) {
+           console.println('Test Success: ' + str + ' against ' + textFormat);
+         }
+         // Given a match, set the current page IDs to match the previous's
+         this.textIds[page] = lastTextIds;
+         return;
+       }
+       i++;
+     }
+     // Otherwise it failed. Fall through into the default case of searching for it manually
+     if (DEBUG) {
+       console.println('Test Failed on Page ' + (page - 1) + ' Against: ' + textFormat);
+     }
+   }
+   // If the textId or textFormat were not provied, or the text did not match the textFormat, search for it manually and return its finidngs
+   this.textIds[page] = findTextOnPage(page, this.text);
+ };
 
 /**
  * Method: Primary method. Used to retrieve the value(s) from the document matching specific
@@ -482,6 +503,7 @@ TextId.prototype.redactText = function redactText(page) {
 //  DEFINITIONS //
 var PAGES = this.numPages; // The number of PAGES in the PDF
 var DOCUMENT_FILE_NAME = this.documentFileName;
+var DEBUG = false;
 
 // TODO: FLAG FOR DIFFERENT TICKET TYPES
 var TICKET_DATA = {
@@ -499,8 +521,8 @@ var TICKET_DATA = {
     value: /\d{1,3}/
   },
   date: {
-    string: [/(Mon\s|Tue\s|Wed\s|Thu\s|Fri\s|Sat\s|Sun\s)/i, /[A-Z][a-z]{2,4}/, /\d{1,2},/, /\d{4}/, /\d{1,2}:/, /\d{2}/, /(am|pm)/i],
-    value: /[a-z]{3}\s[A-Z][a-z]{2,4}\s\d{1,2},\s\d{4}\s\d{1,2}:\d{2}\s[a-z]{2}/i
+    string: [/(Mon\s|Tue\s|Wed\s|Thu\s|Fri\s|Sat\s|Sun\s)/i, /[A-Z]{3,4}/i, /\d{1,2}[,]?/, /\d{4}/, /\d{1,2}:/, /\d{2}(am|pm)?/, /(am|pm)?/i],
+    value: /[A-Z]{3}\s[A-Z]{3,4}\s\d{1,2}[,]?\s\d{4}\s\d{1,2}\:\d{2}[\s]?[A-Z]{2}/i
   },
   serial: {
     string: [/\d{4}/, /\d{4}/, /\d{4}/],
@@ -529,46 +551,47 @@ if (PAGES >= 1 || getPageNumWords(0) > 0) {
     ticketData.addData('date', page);
     ticketData.addData('serial', page);
     // Check to see if this page marks the end of a ticket group
-//     if (ticketData.isNewTicketGroup(page)) {
-//       var nEnd = page - 1;
-//       if (page === ticketData.pages - 1) {
-//         nEnd++;
-//       }
-//       // Extract the page and retrieve the text to use for the file name
-//       var data = ticketData.getData(grpStart);
-//       var fileName = data.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + data.section + ' ' + data.row + ' ' + data.seat;
-//       if (grpStart !== nEnd) {
-//         fileName += '-' + ticketData.getData(nEnd).seat;
-//       }
-//       fileName += '.pdf';
-//       console.println(fileName);
-//       try {
-//         extractPages({
-//           nStart: grpStart,
-//           nEnd: nEnd,
-//           cPath: directory + fileName
-//         });
-//       } catch (e) {
-//         console.println('Failed to save File:\n' + e, 0);
-//       } finally {
-//         grpStart = page;
-//       }
-//     }
-//   }
-//   ticketData.exportDataAsText(directory);
-// }
-
-    // Extract the page and retrieve the text to use for the file name
-    var data = ticketData.getData(page);
-    var fileName = data.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + data.section + ' ' + data.row + ' ' + data.seat + '.pdf';
-    try {
-      extractPages({
-        nStart: page,
-        cPath: directory + fileName
-      });
-    } catch (e) {
-      app.alert('Failed to save File:\n' + e, 0);
+    if (ticketData.isNewTicketGroup(page)) {
+      var nEnd = page - 1;
+      if (page === ticketData.pages - 1) {
+        nEnd++;
+      }
+      // Extract the page and retrieve the text to use for the file name
+      var data = ticketData.getData(grpStart);
+      var fileName = data.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + data.section + ' ' + data.row + ' ' + data.seat;
+      if (grpStart !== nEnd) {
+        fileName += '-' + ticketData.getData(nEnd).seat;
+      }
+      fileName += '.pdf';
+      console.println(fileName);
+      try {
+        extractPages({
+          nStart: grpStart,
+          nEnd: nEnd,
+          cPath: directory + fileName
+        });
+      } catch (e) {
+        console.println('Failed to save File:\n' + e, 0);
+      } finally {
+        grpStart = page;
+      }
     }
   }
   ticketData.exportDataAsText(directory);
 }
+
+    // // Extract the page and retrieve the text to use for the file name
+    // var data = ticketData.getData(page);
+    // var fileName = data.date.replace(',', '').match(/[a-z]{2,5}\s\d{1,2}\s\d{4}/i) + ' ' + data.section + ' ' + data.row + ' ' + data.seat + '.pdf';
+    // try {
+    //   extractPages({
+    //     nStart: page,
+    //     cPath: directory + fileName
+    //   });
+    // } catch (e) {
+    //   app.alert('Failed to save File:\n' + e, 0);
+    // }
+//
+//   }
+//   ticketData.exportDataAsText(directory);
+// }

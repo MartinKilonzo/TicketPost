@@ -202,8 +202,12 @@ var mergeLists = function mergeLists(leftList, rightList) {
   var l = 0;
   var r = 0;
   while (l < leftList.length && r < rightList.length) {
-    var lDate = Date.parse(leftList[l].ticket.date);
-    var rDate = Date.parse(rightList[r].ticket.date);
+    var lDate = leftList[l].ticket.date;
+    var rDate = rightList[r].ticket.date;
+    if (!lDate.charAt(lDate.length - 3).match(/\s/)) lDate = lDate.slice(0, -2) + ' ' + lDate.slice(-2);
+    if (!rDate.charAt(rDate.length - 3).match(/\s/)) rDate = rDate.slice(0, -2) + ' ' + rDate.slice(-2);
+    lDate = new Date(lDate);
+    rDate = new Date(rDate);
     if (lDate < rDate) {
       ret.push(leftList[l++]);
     } else if (lDate > rDate) {
@@ -216,21 +220,34 @@ var mergeLists = function mergeLists(leftList, rightList) {
       } else if (lSection > rSection) {
         ret.push(rightList[r++]);
       } else {
-        var lRow = parseInt(leftList[l].ticket.row, 10);
-        var rRow = parseInt(rightList[r].ticket.row, 10);
-        if (lRow < rRow) {
+        lSection = leftList[l].ticket.section.slice(3);
+        rSection = rightList[r].ticket.section.slice(3);
+        if (lSection < rSection) {
           ret.push(leftList[l++]);
-        } else if (lRow > rRow) {
+        } else if (lSection > rSection) {
           ret.push(rightList[r++]);
         } else {
-          var lSeat = parseInt(leftList[l].ticket.seat, 10);
-          var rSeat = parseInt(rightList[r].ticket.seat, 10);
-          if (lSeat < rSeat) {
+          var lRow = parseInt(leftList[l].ticket.row, 10);
+          var rRow = parseInt(rightList[r].ticket.row, 10);
+          if (lRow < rRow) {
             ret.push(leftList[l++]);
-          } else if (lSeat > rSeat) {
+          } else if (lRow > rRow) {
             ret.push(rightList[r++]);
           } else {
-            app.alert('Duplicate?');
+            var lSeat = parseInt(leftList[l].ticket.seat, 10);
+            var rSeat = parseInt(rightList[r].ticket.seat, 10);
+            if (lSeat < rSeat) {
+              ret.push(leftList[l++]);
+            } else if (lSeat > rSeat) {
+              ret.push(rightList[r++]);
+            } else {
+              if (DEBUG) {
+                console.println('Duplicate?');
+                return;
+              } else {
+                app.alert('Duplicate?');
+              }
+            }
           }
         }
       }
@@ -398,39 +415,34 @@ TextId.prototype.getText = function getText(page, inputTextFormat) {
   if (!textFormat) {
     textFormat = this.text;
   }
-  var n = page > 0 ? 1 : 0;
-  // If textIds are provided, test them against the text format provided,
-  // but only if they come from docs with the same word count:
-  if (getPageNumWords(page - n) === getPageNumWords(page) && this.textIds[page - n]) {
+  var lastTextIds = this.textIds[page - 1];
+  if (page > 0 && lastTextIds.length > 0 && getPageNumWords(page - 1) === getPageNumWords(page)) {
+    //TODO: Check last find against both the value and the string (label)
+    // If textIds are provided, test them against the text format provided, but only if they come from docs with the same word count:
     if (DEBUG) {
-      console.println('reusing word id for ' + this.text + ' ...');
+      console.println('Attempting to reuse word id for ' + this.text + ' ...');
     }
-    // Create a string using the textIds
+    // Use the previous page's indices to test the current pages indices for matches
+    var i = 0;
     var str = '';
-    for (var i = 0; i < this.textIds[page - n].length; i++) {
-      str += getPageNthWord(page, this.textIds[page - n][i], false);
-    }
-    // Test it against the format to verify it
-    var j = 0;
-    while (j < textFormat.length && str.match(textFormat[j])) {
-      // When we have reached the end, we have a match
-      if (j === textFormat.length - 1) {
+    while (getPageNthWord(page, lastTextIds[i], false).match(textFormat[i])) {
+      str += getPageNthWord(page, lastTextIds[i], false);
+      if (i === textFormat.length - 1) {
         if (DEBUG) {
           console.println('Test Success: ' + str + ' against ' + textFormat);
         }
         // Given a match, set the current page IDs to match the previous's
-        this.textIds[page] = this.textIds[page - n];
+        this.textIds[page] = lastTextIds;
         return;
       }
-      j++;
+      i++;
     }
     // Otherwise it failed. Fall through into the default case of searching for it manually
     if (DEBUG) {
-      console.println('Test Failed: ' + str + ' against ' + textFormat);
+      console.println('Test Failed on Page ' + (page - 1) + ' Against: ' + textFormat);
     }
   }
-  // If the textId or textFormat were not provied, or the text did not match the textFormat,
-  // search for it manually and return its finidngs
+  // If the textId or textFormat were not provied, or the text did not match the textFormat, search for it manually and return its finidngs
   this.textIds[page] = findTextOnPage(page, this.text);
 };
 
@@ -518,14 +530,13 @@ var TICKET_DATA = {
     string: [/Row:/i, /\d{1,3}/],
     value: /\d{1,3}/
   },
-
   seat: {
     string: [/Seat:/i, /\d{1,3}/],
     value: /\d{1,3}/
   },
   date: {
-    string: [/(Mon\s|Tue\s|Wed\s|Thu\s|Fri\s|Sat\s|Sun\s)/i, /[A-Z][a-z]{2,4}/, /\d{1,2},/, /\d{4}/, /\d{1,2}:/, /\d{2}/, /(am|pm)/i],
-    value: /[a-z]{3}\s[A-Z][a-z]{2,4}\s\d{1,2},\s\d{4}\s\d{1,2}:\d{2}\s[a-z]{2}/i
+    string: [/(Mon\s|Tue\s|Wed\s|Thu\s|Fri\s|Sat\s|Sun\s)/i, /[A-Z]{3,4}/i, /\d{1,2}[,]?/, /\d{4}/, /\d{1,2}:/, /\d{2}(am|pm)?/, /(am|pm)?/i],
+    value: /[A-Z]{3}\s[A-Z]{3,4}\s\d{1,2}[,]?\s\d{4}\s\d{1,2}\:\d{2}[\s]?[A-Z]{2}/i
   },
   serial: {
     string: [/\d{4}/, /\d{4}/, /\d{4}/],

@@ -9,7 +9,6 @@ import UploadTicket from './UploadTickets.jsx';
 class TicketPostComponent extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
     this.state = props.data;
     this.state.showMoreDetails = props.showMoreDetails;
     this.changeView = this.changeView.bind(this);
