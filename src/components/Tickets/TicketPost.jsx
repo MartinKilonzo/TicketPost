@@ -14,7 +14,6 @@ class TicketPostComponent extends React.Component {
     this.changeView = this.changeView.bind(this);
     this.saveChanges = this.saveChanges.bind(this);
     this.submitTickets = this.submitTickets.bind(this);
-    // this.postTickets();
   }
   changeView() {
     this.setState({
@@ -29,6 +28,13 @@ class TicketPostComponent extends React.Component {
   }
   render() {
     const ticketPost = this.state;
+    const flags = () => {
+      let str = '';
+      for (var flag in ticketPost.flags) {
+        str += flag + '\n'
+      }
+      return str.slice(0, str.length - 1);
+    }
     const ticketStyle = {
       whiteSpace: 'normal'
     };
@@ -51,6 +57,7 @@ class TicketPostComponent extends React.Component {
           {ticketPost.showMoreDetails && <div style={ticketStyle}>
             Event: {ticketPost.event.Name}<br/>
             Code: {ticketPost.event.EventId}<br/>
+          Flags: {flags()}
           </div>}
         </Button>
         <Price eventData={ticketPost.event} section={ticketPost.section}></Price>

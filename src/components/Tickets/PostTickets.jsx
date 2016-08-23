@@ -8,6 +8,7 @@ class PostTicketComponent extends React.Component {
     super(props);
     this.state = props;
     this.postTickets = this.postTickets.bind(this);
+    // this.postTickets();
   }
   postTickets() {
     const state = this;

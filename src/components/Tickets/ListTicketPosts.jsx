@@ -22,7 +22,7 @@ class ListTicketPostsComponent extends React.Component {
     this.setState({filterEvent: ticketPost.event.Name, filterDate: ticketPost.date});
   }
   render() {
-    //TODO: Fix first ticketpost being listed last
+    //TODO: Fix first ticketpost being listed last --> sort tickets client side or via API
     const props = this.props;
     const colStyle = {
       textAlign: 'center'

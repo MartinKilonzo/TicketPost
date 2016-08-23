@@ -69,7 +69,8 @@ class fileProcessingComponent extends React.Component {
       this.seat = parseInt(data.seat); // Parse the seat for comparisons
       this.serial = parseInt(data.serial.replace(/\s/g, '')); // Parse the serial for comparisons, removing the space that may partition it beforehand
       this.flags = {
-        obstructedView: data.obstructedView
+        obstructedView: data.obstructedView,
+        firstRowOfSection: this.row === 1 ? true : false
       }
     };
 
