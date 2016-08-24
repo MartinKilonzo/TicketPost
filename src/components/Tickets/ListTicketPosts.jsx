@@ -1,9 +1,9 @@
 import React from 'react';
-
-import TicketPost from './TicketPost';
-import Date from './Date.jsx';
-
 import {Col, Button, ButtonGroup, Row} from 'react-bootstrap';
+
+import TicketPost from './TicketPost.jsx';
+import TicketGroupMenu from './TicketGroupMenu.jsx'
+import colors from '../Home/colors.jsx';
 
 class ListTicketPostsComponent extends React.Component {
   constructor(props) {
@@ -12,10 +12,10 @@ class ListTicketPostsComponent extends React.Component {
       filterDate: props.filterDate,
       filterEvent: props.filterEvent
     };
-    this.resetFilters = this.resetFilters.bind(this);
+    this.resetFilter = this.resetFilter.bind(this);
     this.setTicketFilter = this.setTicketFilter.bind(this);
   }
-  resetFilters() {
+  resetFilter() {
     this.setState({filterEvent: '', filterDate: ''});
   }
   setTicketFilter(ticketPost, event) {
@@ -26,19 +26,6 @@ class ListTicketPostsComponent extends React.Component {
     const props = this.props;
     const colStyle = {
       textAlign: 'center'
-    }
-    const buttonStyle = {
-      width: '33%',
-      paddingTop: '10px',
-      paddingLeft: '4%',
-      paddingBottom: '10px',
-      textAlign: 'center'
-    }
-    const btnGrpStyle = {
-      marginBottom: '20px'
-    }
-    const postGroupsButtonStyle = {
-      whiteSpace: 'normal'
     };
     const component = this;
     return (
@@ -49,41 +36,7 @@ class ListTicketPostsComponent extends React.Component {
           </div>
         </div>
         <Col xs={3}>
-          <Row>
-            <Col md={6} mdOffset={3}>
-              <ButtonGroup justified style={btnGrpStyle}>
-                <Button bsStyle="success" style={buttonStyle}>Accepted</Button>
-                <Button bsStyle="warning" style={buttonStyle}>Warnings</Button>
-                <Button bsStyle="danger" style={buttonStyle}>Errors</Button>
-              </ButtonGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Button onClick={this.resetFilters} vertical block>Show All</Button>
-          </Row>
-          <Row>
-            {props.ticketPosts.map((ticketPost, key) => {
-              let comparableTicketPost;
-              if (key < this.props.ticketPosts.length - 1) {
-                // If this element is the last element (or only), compare it to the previous element instead of the next one
-                comparableTicketPost = this.props.ticketPosts[key + 1];
-              }
-              else {
-                // To prevent index out of bounds error
-                comparableTicketPost = this.props.ticketPosts[key - 1];
-              }
-              // If its the last ticketPost, or one in the list and the date or the event doesnt match the next ticketPost, create a filter for this grouping of ticketPosts:
-              if (key === this.props.ticketPosts.length - 1 || ticketPost.date !== comparableTicketPost.date || ticketPost.event.Name !== comparableTicketPost.event.Name) {
-                let setTicketFilter = component.setTicketFilter.bind(this, ticketPost);
-                return (
-                  <Button key={key} onClick={setTicketFilter} style={postGroupsButtonStyle} vertical block>
-                    {ticketPost.event.Name}
-                    <Date date={ticketPost.date}></Date>
-                  </Button>
-                );
-              }
-            })}
-          </Row>
+          <TicketGroupMenu setFilter={this.setTicketFilter} resetFilter={this.resetFilter} ticketPosts={this.props.ticketPosts}></TicketGroupMenu>
         </Col>
         <Col xs={9}>
           <Row>
