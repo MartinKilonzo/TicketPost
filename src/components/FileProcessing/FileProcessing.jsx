@@ -28,6 +28,9 @@ class fileProcessingComponent extends React.Component {
     this.saveTicketData = this.saveTicketData.bind(this);
     this.createTicketGroups = this.createTicketGroups.bind(this);
     this.createTicketGroups = this.createTicketGroups.bind(this);
+    this.sortTickets = this.sortTickets.bind(this);
+    this.mergeSort = this.mergeSort.bind(this);
+    this.mergeLists = this.mergeLists.bind(this);
   }
   /**
    * Method: Saves form field data (excepting files) to State, and changes the view to view the new data.
@@ -45,13 +48,106 @@ class fileProcessingComponent extends React.Component {
     // Save the new state
     this.setState(newState, () => {
       // Change the view to hide the form and show the newly saved data
-      this.setState({
-        showForm: false,
-        showPDFFileProcessing: true,
-        showTickets: false
-      });
+      this.setState({showForm: false, showPDFFileProcessing: true, showTickets: false});
     });
   }
+  /**
+   * Wrapper: Uses mergeSort to sort the tickets.
+   *
+   * @param {Ticket[]} data                 - The ticket data to sort
+   * @return                                - Ticket[] containing the sorted data
+   */
+  sortTickets(data) {
+    return this.mergeSort(data);
+  }
+  /**
+   * Helper Method: Preforms the merging and requests the sorting from a helper function
+   * to execute MergeSort on a set of Ticekts.
+   *
+   * @param {Ticket[]} list                 - An (unsorted) list of Tickets
+   * @return {Ticket[]} list                - A sorted list of Tickets
+   */
+  mergeSort(list) {
+    if (list.length < 2) {
+      return list;
+    }
+    var leftList = this.mergeSort(list.slice(0, (list.length + 1) / 2));
+    var rightList = this.mergeSort(list.slice((list.length + 1) / 2, list.length));
+    return this.mergeLists(leftList, rightList);
+  }
+  /**
+   * Helper Method: Preforms the sorting at the request of mergeSort(list).
+   *
+   * @param {Ticket[]} leftList             - An (unsorted) list of Tickets
+   * @param {Ticket[]} rightList            - An (unsorted) list of Tickets
+   * @return {Ticket[]} list                - A sorted, merged list containing Tickets from both lists
+   */
+  mergeLists(leftList, rightList) {
+    var ret = [];
+    var l = 0;
+    var r = 0;
+    while (l < leftList.length && r < rightList.length) {
+      var lDate = leftList[l].date;
+      var rDate = rightList[r].date;
+      if (!lDate.charAt(lDate.length - 3).match(/\s/))
+        lDate = lDate.slice(0, -2) + ' ' + lDate.slice(-2);
+      if (!rDate.charAt(rDate.length - 3).match(/\s/))
+        rDate = rDate.slice(0, -2) + ' ' + rDate.slice(-2);
+      lDate = new Date(lDate);
+      rDate = new Date(rDate);
+      if (lDate < rDate) {
+        ret.push(leftList[l++]);
+      } else if (lDate > rDate) {
+        ret.push(rightList[r++]);
+      } else {
+        var lSection = parseInt(leftList[l].section.match(/\d{1,3}/), 10);
+        var rSection = parseInt(rightList[r].section.match(/\d{1,3}/), 10);
+        if (lSection < rSection) {
+          ret.push(leftList[l++]);
+        } else if (lSection > rSection) {
+          ret.push(rightList[r++]);
+        } else {
+          lSection = leftList[l].section.slice(3);
+          rSection = rightList[r].section.slice(3);
+          if (lSection < rSection) {
+            ret.push(leftList[l++]);
+          } else if (lSection > rSection) {
+            ret.push(rightList[r++]);
+          } else {
+            var lRow = parseInt(leftList[l].row, 10);
+            var rRow = parseInt(rightList[r].row, 10);
+            if (lRow < rRow) {
+              ret.push(leftList[l++]);
+            } else if (lRow > rRow) {
+              ret.push(rightList[r++]);
+            } else {
+              var lSeat = parseInt(leftList[l].seat, 10);
+              var rSeat = parseInt(rightList[r].seat, 10);
+              if (lSeat < rSeat) {
+                ret.push(leftList[l++]);
+              } else if (lSeat > rSeat) {
+                ret.push(rightList[r++]);
+              } else {
+                if (DEBUG) {
+                  console.println('Duplicate?');
+                  return;
+                } else {
+                  app.alert('Duplicate?');
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    while (l < leftList.length) {
+      ret.push(leftList[l++]);
+    }
+    while (r < rightList.length) {
+      ret.push(rightList[r++]);
+    }
+    return ret;
+  };
   /**
    * Method: Transforms ticket data into ticket objects.
    *
@@ -70,18 +166,21 @@ class fileProcessingComponent extends React.Component {
       this.serial = parseInt(data.serial.replace(/\s/g, '')); // Parse the serial for comparisons, removing the space that may partition it beforehand
       this.flags = {
         obstructedView: data.obstructedView,
-        firstRowOfSection: this.row === 1 ? true : false
+        firstRowOfSection: this.row === 1
+          ? true
+          : false
       }
     };
-
     //TODO: Add getter and setters for each field
     let tickets = [];
     // For each data object (ie Ticket),
     data.forEach(ticketData => {
       tickets.push(new Ticket(ticketData));
     });
-    this.setState({tickets: tickets}, () => {
-      this.createTicketGroups(tickets);
+    this.setState({
+      tickets: this.sortTickets(tickets)
+    }, () => {
+      this.createTicketGroups(this.state.tickets);
     });
   }
   /**
@@ -108,9 +207,10 @@ class fileProcessingComponent extends React.Component {
       this.flags = {};
       ticketGroup.forEach(ticket => {
         for (var flag in ticket.flags) {
-          if (ticket.flags[flag]) this.flags[flag] = ticket.flags[flag];
-        }
-      });
+          if (ticket.flags[flag])
+            this.flags[flag] = ticket.flags[flag];
+          }
+        });
     };
     // Group the tickets
     let ticketList = [];
@@ -151,13 +251,11 @@ class fileProcessingComponent extends React.Component {
         ticketPosts[key].event = result.Items[0];
       });
       console.log(ticketPosts);
-      this.setState({ticketPosts: ticketPosts}, () => {
+      this.setState({
+        ticketPosts: ticketPosts
+      }, () => {
         // Change the view to hide the form and show the newly created ticket groups
-        this.setState({
-          showForm: false,
-          showPDFFileProcessing: false,
-          showTickets: true
-        });
+        this.setState({showForm: false, showPDFFileProcessing: false, showTickets: true});
       }); // Save the newly generated TicketPosts to the state
     }).catch(function error(err) {
       console.error('ERROR', err);
