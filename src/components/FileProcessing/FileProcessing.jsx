@@ -290,7 +290,7 @@ class fileProcessingComponent extends React.Component {
       <div>
         {this.state.showForm && <TicketOptions saveForm={this.saveForm}></TicketOptions>}
         {this.state.showPDFFileProcessing && <PDFFileProcessing file={this.state.filePDF} saveTicketData={this.saveTicketData}></PDFFileProcessing>}
-        {this.state.showTickets && <ListTicketPosts ticketPosts={ticketPosts} modifyTicketPost={this.modifyTicketPost}></ListTicketPosts>}
+        {this.state.showTickets && <TicketGroupView ticketPosts={ticketPosts} modifyTicketPost={this.modifyTicketPost}></TicketGroupView>}
       </div>
     );
   }
