@@ -10,8 +10,6 @@ class ListTicketGroupsComponent extends React.Component {
       filterDate: props.filterDate,
       filterEvent: props.filterEvent
     };
-    this.setFilter = this.setFilter.bind(this);
-    this.resetFilter = this.resetFilter.bind(this);
   }
   componentDidMount() {
     window.addEventListener('setTicketGroupFilter', this.setFilter);
