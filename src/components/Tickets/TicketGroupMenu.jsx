@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button} from 'react-bootstrap';
 
+import ResetFilter from './ResetFilter.jsx';
 import StatusFilter from './StatusFilter.jsx';
 import TicketFilter from './TicketFilter.jsx';
 
@@ -9,15 +10,6 @@ class TicketGroupMenuComponent extends React.Component {
     super(props);
     this.state = {
     };
-  }
-  resetFilter(event, ticketPost) {
-    const resetFilterEvent = new CustomEvent('setTicketGroupFilter', {
-      detail: {
-        filterEvent: '',
-        filterDate: ''
-      }
-    });
-    window.dispatchEvent(resetFilterEvent);
   }
   render() {
     const styles = {
@@ -30,7 +22,7 @@ class TicketGroupMenuComponent extends React.Component {
     };
     return (
       <div>
-        <Button onClick={this.resetFilter}>Show All</Button>
+        <ResetFilter></ResetFilter>
         <StatusFilter></StatusFilter>
         <TicketFilter ticketGroups={this.props.ticketGroups}></TicketFilter>
       </div>
