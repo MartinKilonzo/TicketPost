@@ -3,7 +3,7 @@ import React from 'react';
 import TicketOptions from '../TicketOptions/TicketOptions.jsx'
 import TextFileProcessing from '../../actions/FileProcessingActions/TextFileProcessing.jsx';
 import PDFFileProcessing from '../../actions/FileProcessingActions/PDFFileProcessing.jsx';
-import ListTicketPosts from '../Tickets/ListTicketPosts.jsx';
+import TicketGroupView from '../Tickets/TicketGroupView.jsx';
 import EventQuery from '../TicketUtils/EventQuery.jsx';
 
 // TODO: Loading bar

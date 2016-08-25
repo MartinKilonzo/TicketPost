@@ -5,7 +5,7 @@ import TicketPost from './TicketPost.jsx';
 import TicketGroupMenu from './TicketGroupMenu.jsx'
 import colors from '../Home/colors.jsx';
 
-class ListTicketPostsComponent extends React.Component {
+class TicketGroupView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -58,10 +58,10 @@ class ListTicketPostsComponent extends React.Component {
   }
 }
 
-ListTicketPostsComponent.defaultProps = {
+TicketGroupView.defaultProps = {
   ticketPosts: [],
   filterDate: '',
   filterEvent: ''
 };
 
-export default ListTicketPostsComponent;
+export default TicketGroupView;
