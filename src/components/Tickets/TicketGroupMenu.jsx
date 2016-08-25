@@ -10,6 +10,24 @@ class TicketGroupMenuComponent extends React.Component {
       filterEvent: props.filterEvent
     };
   }
+  setFilter(ticketPost, event) {
+    const setFilterEvent = new CustomEvent('setTicketGroupFilter', {
+      detail: {
+        filterEvent: ticketPost.event.Name,
+        filterDate: ticketPost.date
+      }
+    });
+    window.dispatchEvent(setFilterEvent);
+  }
+  resetFilter(event, ticketPost) {
+    const resetFilterEvent = new CustomEvent('setTicketGroupFilter', {
+      detail: {
+        filterEvent: '',
+        filterDate: ''
+      }
+    });
+    window.dispatchEvent(resetFilterEvent);
+  }
   render() {
     const styles = {
       buttonStyle: {
@@ -38,7 +56,7 @@ class TicketGroupMenuComponent extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Button onClick={this.props.resetFilter} vertical block>Show All</Button>
+          <Button onClick={this.resetFilter} vertical block>Show All</Button>
         </Row>
         <Row>
           {this.props.ticketPosts.map((ticketPost, key) => {
@@ -53,7 +71,7 @@ class TicketGroupMenuComponent extends React.Component {
             // If its the last ticketPost, or one in the list and the date or the event doesnt match the next ticketPost, create a filter for this grouping of ticketPosts:
             if (key === this.props.ticketPosts.length - 1 || ticketPost.date !== comparableTicketPost.date || ticketPost.event.Name !== comparableTicketPost.event.Name) {
               // Bind the ticketPost data to the function:
-              let setTicketFilter = this.props.setFilter.bind(this, ticketPost);
+              let setTicketFilter = this.setFilter.bind(this, ticketPost);
               return (
                 <Button key={key} onClick={setTicketFilter} style={styles.postGroupsButtonStyle} vertical block>
                   {ticketPost.event.Name}
@@ -69,9 +87,7 @@ class TicketGroupMenuComponent extends React.Component {
 }
 
 TicketGroupMenuComponent.defaultProps = {
-  ticketPosts: [],
-  filterDate: '',
-  filterEvent: ''
+  ticketPosts: []
 };
 
 export default TicketGroupMenuComponent;
