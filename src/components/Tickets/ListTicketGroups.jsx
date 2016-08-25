@@ -10,6 +10,7 @@ class ListTicketGroupsComponent extends React.Component {
       filterDate: props.filterDate,
       filterEvent: props.filterEvent
     };
+    this.setFilter = this.setFilter.bind(this);
   }
   componentDidMount() {
     window.addEventListener('setTicketGroupFilter', this.setFilter);
@@ -32,13 +33,13 @@ class ListTicketGroupsComponent extends React.Component {
     };
     return (
       <Row>
-        {this.props.ticketPosts.map((ticketPost, key) => {
+        {this.props.ticketGroups.map((ticketGroup, key) => {
           const filterEvent = this.state.filterEvent;
           const filterDate = this.state.filterDate;
-          if ((filterEvent === '' && filterDate === '') || (ticketPost.event.Name === filterEvent && ticketPost.date === filterDate)) {
+          if ((filterEvent === '' && filterDate === '') || (ticketGroup.event.Name === filterEvent && ticketGroup.date === filterDate)) {
             return (
               <Col xs={4} key={key} style={styles.colStyle}>
-                <TicketPost data={ticketPost} key={key} saveChanges={this.props.modifyTicketPost}></TicketPost>
+                <TicketPost data={ticketGroup} key={key} saveChanges={this.props.modifyTicketPost}></TicketPost>
               </Col>
             );
           }
@@ -49,7 +50,7 @@ class ListTicketGroupsComponent extends React.Component {
 }
 
 ListTicketGroupsComponent.defaultProps = {
-  ticketPosts: [],
+  ticketGroups: [],
   filterDate: '',
   filterEvent: ''
 };

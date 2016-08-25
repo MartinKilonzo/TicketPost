@@ -16,15 +16,15 @@ class TicketGroupView extends React.Component {
     return (
       <div>
         <PageHeader align='right'>Tickets</PageHeader>
-        <TicketGroupMenu setFilter={this.setTicketFilter} resetFilter={this.resetFilter} ticketPosts={this.props.ticketPosts}></TicketGroupMenu>
-        <ListTicketGroups ticketPosts={this.props.ticketPosts}></ListTicketGroups>
+        <TicketGroupMenu setFilter={this.setTicketFilter} resetFilter={this.resetFilter} ticketGroups={this.props.ticketGroups}></TicketGroupMenu>
+        <ListTicketGroups ticketGroups={this.props.ticketGroups}></ListTicketGroups>
       </div>
     );
   }
 }
 
 TicketGroupView.defaultProps = {
-  ticketPosts: []
+  ticketGroups: []
 };
 
 export default TicketGroupView;

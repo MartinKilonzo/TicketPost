@@ -22,7 +22,7 @@ class fileProcessingComponent extends React.Component {
       showForm: props.showForm, // Boolean representing whether or not to show the form view
       showPDFFileProcessing: props.showPDFFileProcessing, // Boolean representing whether or not to show ticket processing details
       showPDFFileProcessing: props.showPDFFileProcessing, // Boolean representing whether or not to show PDF processing details
-      ticketPosts: props.ticketPosts // TicketPost[Ticket] generated from the input data to be posted to the TicketUtils API
+      ticketGroups: props.ticketGroups // ticketGroup[Ticket] generated from the input data to be posted to the TicketUtils API
     };
     this.saveForm = this.saveForm.bind(this);
     this.saveTicketData = this.saveTicketData.bind(this);
@@ -190,8 +190,8 @@ class fileProcessingComponent extends React.Component {
    */
   createTicketGroups(data) {
     console.log(data);
-    // Define the constructor for TicketPosts
-    let TicketPost = function TicketPost(ticketGroup) {
+    // Define the constructor for ticketGroups
+    let ticketGroup = function ticketGroup(ticketGroup) {
       this.date = ticketGroup[0].date;
       this.section = ticketGroup[0].section;
       this.row = ticketGroup[0].row;
@@ -214,7 +214,7 @@ class fileProcessingComponent extends React.Component {
     };
     // Group the tickets
     let ticketList = [];
-    let ticketPosts = [];
+    let ticketGroups = [];
     // Go through each ticket, ordered in ascending order beforehand,
     //TODO: Split tickets by flags
     for (var iTicket = 0; iTicket < data.length - 1; iTicket++) {
@@ -223,43 +223,43 @@ class fileProcessingComponent extends React.Component {
       ticketList.push(ticket); // Add the current ticket to the list
       if (iTicket + 1 === data.length - 1) { // If the current ticket is the last one,
         ticketList.push(nextTicket); //  It marks the end of a ticket grouping, so add it to the list
-        ticketPosts.push(new TicketPost(ticketList)); // And add the list to the list of TicketPost
+        ticketGroups.push(new ticketGroup(ticketList)); // And add the list to the list of ticketGroup
         ticketList = []; // And then empty the list (Redundant?)
       } else if (ticket.date !== nextTicket.date) { // Otherwise if the dates on the tickets don't match, then it marks the end of a ticket grouping
-        ticketPosts.push(new TicketPost(ticketList)); // So add the grouping to the list of TicketPosts
+        ticketGroups.push(new ticketGroup(ticketList)); // So add the grouping to the list of ticketGroups
         ticketList = []; // And then empty the list
       } else if (ticket.section !== nextTicket.section) { // Otherwise if the sections on the tickets don't match, then it marks the end of a ticket grouping
-        ticketPosts.push(new TicketPost(ticketList)); // So add the grouping to the list of TicketPosts
+        ticketGroups.push(new ticketGroup(ticketList)); // So add the grouping to the list of ticketGroups
         ticketList = []; // And then empty the list
       } else if (ticket.row !== nextTicket.row) { // Otherwise if the rows on the tickets don't match, then it marks the end of a ticket grouping
-        ticketPosts.push(new TicketPost(ticketList)); // So add the grouping to the list of TicketPosts
+        ticketGroups.push(new ticketGroup(ticketList)); // So add the grouping to the list of ticketGroups
         ticketList = []; // And then empty the list
       } else if (nextTicket.seat - ticket.seat !== 1) { // Otherwise if the seats are not incrementally ascending, then it marks the end of a ticket grouping
-        ticketPosts.push(new TicketPost(ticketList)); // So add the grouping to the list of TicketPosts
+        ticketGroups.push(new ticketGroup(ticketList)); // So add the grouping to the list of ticketGroups
         ticketList = []; // And then empty the list
       } // Otherwise, if it made it this far, it belongs in the same group
     }
     //Query the API for event data
-    // TODO: Refactor into seperate function, passed via props into TicketPost to allow for refreshed data
-    // Use the previous data to generate queryies for each TicketPost to ensure it corresponds with an event on the TicketUtils API
+    // TODO: Refactor into seperate function, passed via props into ticketGroup to allow for refreshed data
+    // Use the previous data to generate queryies for each ticketGroup to ensure it corresponds with an event on the TicketUtils API
     let promises = [];
-    ticketPosts.forEach(function getEvent(ticketPost) {
-      promises.push(new EventQuery(ticketPost.date, ticketPost.venue).send());
+    ticketGroups.forEach(function getEvent(ticketGroup) {
+      promises.push(new EventQuery(ticketGroup.date, ticketGroup.venue).send());
     });
     Promise.all(promises).then(results => {
       results.forEach(function saveEvent(result, key) {
-        ticketPosts[key].event = result.Items[0];
+        ticketGroups[key].event = result.Items[0];
       });
-      console.log(ticketPosts);
+      console.log(ticketGroups);
       this.setState({
-        ticketPosts: ticketPosts
+        ticketGroups: ticketGroups
       }, () => {
         // Change the view to hide the form and show the newly created ticket groups
         this.setState({showForm: false, showPDFFileProcessing: false, showTickets: true});
-      }); // Save the newly generated TicketPosts to the state
+      }); // Save the newly generated ticketGroups to the state
     }).catch(function error(err) {
       console.error('ERROR', err);
-      //TODO: Alert user about error (color ticketPost red); create error components for ticketpost and use those (dimmed with error message)
+      //TODO: Alert user about error (color ticketGroup red); create error components for ticketGroup and use those (dimmed with error message)
     });
   }
   /**
@@ -270,9 +270,9 @@ class fileProcessingComponent extends React.Component {
   saveTicketData(data) {
     this.createTickets(data); // Create the tickets and ticket groups
   }
-  modifyTicketPost(newTicketPost) {
+  modifyticketGroup(newticketGroup) {
     //TODO: PLACEHOLDER - Modify tickets
-    console.debug('Modified: ', newTicketPost);
+    console.debug('Modified: ', newticketGroup);
   }
   postTicket(ticket) {
     //TODO: PLACEHOLDER - Post ticket
@@ -280,17 +280,17 @@ class fileProcessingComponent extends React.Component {
   }
   //TODO: PLACEHOLDER - Post all tickets
   postAllTickets() {
-    this.state.ticketPost.forEach(function forEach(ticket) {
+    this.state.ticketGroup.forEach(function forEach(ticket) {
       this.postTicket(ticket);
     });
   }
   render() {
-    let ticketPosts = this.state.ticketPosts;
+    let ticketGroups = this.state.ticketGroups;
     return (
       <div>
         {this.state.showForm && <TicketOptions saveForm={this.saveForm}></TicketOptions>}
         {this.state.showPDFFileProcessing && <PDFFileProcessing file={this.state.filePDF} saveTicketData={this.saveTicketData}></PDFFileProcessing>}
-        {this.state.showTickets && <TicketGroupView ticketPosts={ticketPosts} modifyTicketPost={this.modifyTicketPost}></TicketGroupView>}
+        {this.state.showTickets && <TicketGroupView ticketGroups={ticketGroups} modifyticketGroup={this.modifyticketGroup}></TicketGroupView>}
       </div>
     );
   }
@@ -300,7 +300,7 @@ fileProcessingComponent.defaultProps = {
   showForm: true,
   showPDFFileProcessing: false,
   showTickets: false,
-  ticketPosts: []
+  ticketGroups: []
 };
 
 export default fileProcessingComponent;
