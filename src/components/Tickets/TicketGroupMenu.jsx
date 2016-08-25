@@ -8,18 +8,9 @@ import TicketFilter from './TicketFilter.jsx';
 class TicketGroupMenuComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
   }
   render() {
-    const styles = {
-      btnGrpStyle: {
-        marginBottom: '20px'
-      },
-      postGroupsButtonStyle: {
-        whiteSpace: 'normal'
-      }
-    };
     return (
       <div>
         <ResetFilter></ResetFilter>
