@@ -100,10 +100,14 @@ class SubmitButton extends React.Component {
     this.state = {};
   }
   highlightBtn(event) {
-    event.target.style.backgroundColor = colors.white;
+    const style = event.target.style;
+    style.backgroundColor = colors.white;
+    style.color = colors.highlight;
   }
   unHighlightBtn(event) {
-    event.target.style.backgroundColor = 'initial';
+    const style = event.target.style;
+    style.backgroundColor = 'initial';
+    style.color = colors.base;
   }
   render() {
     const styles = {
@@ -120,13 +124,12 @@ class SubmitButton extends React.Component {
         height: '100%',
         border: 'none',
         borderRadius: 0,
-        color: 'white',
         backgroundColor: 'initial'
       },
       labelStyle: {
         height: 0,
         marginTop: 0,
-        color: colors.base,
+        color: 'inherit',
         backgroundColor: 'initial'
       }
     };

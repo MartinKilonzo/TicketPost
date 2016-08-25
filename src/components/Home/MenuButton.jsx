@@ -13,11 +13,13 @@ class MenuButtonComponent extends React.Component {
   highlight(event) {
     const style = event.target.style;
     style.fontWeight = 400;
+    style.color = this.props.colors.accent;
     event.target.style.boxShadow = '0px 1px 2px ' + this.props.colors.dark;
   }
   unHighlight(event) {
     const style = event.target.style;
     style.fontWeight = 300;
+    style.color = this.props.colors.dark;
     event.target.style.boxShadow = 'none';
   }
   showForm(event) {
