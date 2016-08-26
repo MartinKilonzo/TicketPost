@@ -33,7 +33,7 @@ bower_components/
 /**/Test/**
 
 #API Data
-server/routes/fileProcessing/DataFormats
+server/routes/events/DataFormats
 server/routes/fileProcessing/storage
 /**/Authentication.jsx
 

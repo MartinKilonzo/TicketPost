@@ -1,5 +1,6 @@
 'use strict';
 const sortData = require('./mergeSort.js');
+const events = require('../events/events.js');
 
 // const DataFormats = require('./DataFormats/DataFormats');
 
@@ -7,8 +8,10 @@ let getTicketData = (PDFDataList, ticketType) => {
   return new Promise((resolve, reject) => {
     // const format = DataFormats[ticketType.venue][ticketType.ticketEvent];
     try {
-      const format = require('./DataFormats/Venues/' + ticketType.venue + '/' + ticketType.ticketEvent + '.js');
-      const flags = require('./DataFormats/Venues/' + ticketType.venue + '/Flags.js');
+      const event = events.getEvent(ticketType);
+      const format = event.format;
+      const flags = event.flags;
+      console.log(format, flags);
       let result = [];
       for (var pdf in PDFDataList) {
         console.log(`\t Processing File ${ pdf } of ${ PDFDataList.length}`);

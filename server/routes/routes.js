@@ -34,21 +34,27 @@ router.get('/', (req, res) => {
     message: 'woo'
   });
 });
-router.get('/api', (req, res) => {
-  res.send({
-    message: 'soo'
-  });
+router.get('/Events', (req, res) => {
+  let response;
+  try {
+    const events = require('./events/events.js');
+    response = {
+      message: 'success',
+      data: events.listEvents()
+    };
+  } catch (e) {
+    response = {
+      message: e
+    };
+    res.status(error.status || 500);
+  } finally {
+    res.send(response);
+  }
+
 });
 
 router.post('/PDFProcessing', upload.any(), (req, res) => {
-  let ticketType = {}; //req.body.ticketType;
-  ticketType = {
-    venue: 'Rogers Centre',
-    ticketEvent: 'Blue Jays'
-  };
-  for (var field in ticketType) {
-    ticketType[field] = ticketType[field].replace(' ', '');
-  }
+  let ticketType =JSON.parse(req.body.ticketType); //req.body.ticketType;
   console.log('Beginning File Parsing...');
   processPDF.parsePDF(req.files)
     .then(result => {

@@ -12,7 +12,8 @@ class PDFProcessingComponent extends React.Component {
     super(props);
     // TODO: Send event and vanue data to the API
     this.state = {
-      files: props.file
+      files: props.file,
+      ticketType: props.ticketType
     };
     this.processPDFs = this.processPDFs.bind(this);
     this.testParse = this.testParse.bind(this);
@@ -58,7 +59,8 @@ class PDFProcessingComponent extends React.Component {
   }
   testParse() {
     const fileList = this.state.files;
-    let pdfQuery = new tPDFQuery(fileList, (response) => {
+    const ticketType = this.state.ticketType;
+    let pdfQuery = new tPDFQuery(fileList, ticketType, (response) => {
       console.log('progress?', response, this);
     });
     pdfQuery.send().then((result) => {
@@ -79,7 +81,8 @@ class PDFProcessingComponent extends React.Component {
   }
   processPDFs() {
     const fileList = this.state.files;
-    let pdfQuery = new PDFQuery(fileList, (response) => {
+    const ticketType = this.state.ticketType;
+    let pdfQuery = new PDFQuery(fileList, ticketType, (response) => {
       console.log('progress?', response, this);
     });
     pdfQuery.send().then((result) => {

@@ -16,7 +16,7 @@ class fileProcessingComponent extends React.Component {
     this.state = {
       fileText: props.fileText, // File{} referencing a text file containing Ticket data
       filePDF: props.filePDf, // FileList{} referencing the list of Tickets in the form of PDFs
-      toRedact: props.toRedact, // String of the text to redact from the tickets (Non-functional)
+      ticketType: props.ticketType, // String of the text to redact from the tickets (Non-functional)
       redact: props.redact, // Boolean indicating whether or not a redaction of the above should be perform (Non-functional)
       toRedactOrderNumber: props.toRedactOrderNumber, //Boolean indicating whether or not a redaction of the order number should be perform (Non-functional)
       showForm: props.showForm, // Boolean representing whether or not to show the form view
@@ -41,10 +41,11 @@ class fileProcessingComponent extends React.Component {
     // Create a new state object and load it with the form data
     let newState = {
       filePDF: data.filePDF,
-      toRedact: data.toRedact,
       redact: data.redact,
-      toRedactOrderNumber: data.toRedactOrderNumber
+      toRedactOrderNumber: data.toRedactOrderNumber,
+      ticketType: data.ticketType
     };
+    console.debug(newState);
     // Save the new state
     this.setState(newState, () => {
       // Change the view to hide the form and show the newly saved data
@@ -289,7 +290,7 @@ class fileProcessingComponent extends React.Component {
     return (
       <div>
         {this.state.showForm && <TicketOptions saveForm={this.saveForm}></TicketOptions>}
-        {this.state.showPDFFileProcessing && <PDFFileProcessing file={this.state.filePDF} saveTicketData={this.saveTicketData}></PDFFileProcessing>}
+        {this.state.showPDFFileProcessing && <PDFFileProcessing file={this.state.filePDF} ticketType={this.state.ticketType} saveTicketData={this.saveTicketData}></PDFFileProcessing>}
         {this.state.showTickets && <TicketGroupView ticketGroups={ticketGroups} modifyticketGroup={this.modifyticketGroup}></TicketGroupView>}
       </div>
     );
