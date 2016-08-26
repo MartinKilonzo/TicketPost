@@ -2,7 +2,7 @@
 
 let eventList = {
   air_canada_centre: {
-    hockey_hall_of_fame: require('./DataFormats/Venues/air_canada_centre/hockey_hall_of_fame.js'),
+    world_cup_of_hockey: require('./DataFormats/Venues/air_canada_centre/world_cup_of_hockey.js'),
     flags: require('./DataFormats/Venues/air_canada_centre/flags.js')
   },
   rogers_centre: {

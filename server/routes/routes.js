@@ -54,7 +54,7 @@ router.get('/Events', (req, res) => {
 });
 
 router.post('/PDFProcessing', upload.any(), (req, res) => {
-  let ticketType =JSON.parse(req.body.ticketType); //req.body.ticketType;
+  let ticketType = JSON.parse(req.body.ticketType);
   console.log('Beginning File Parsing...');
   processPDF.parsePDF(req.files)
     .then(result => {

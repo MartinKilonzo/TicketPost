@@ -6,7 +6,6 @@ let PDFQuery = function PDFQuery(fileList, ticketType, listener) {
     query.append('file' + i, fileList[i]);
   }
   query.append('ticketType', JSON.stringify(ticketType));
-  console.debug(ticketType);
   const endpoint = '/PDFProcessing';
   return new TicketAPI.Query('POST', endpoint, query, listener);
 };

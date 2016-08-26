@@ -11,7 +11,6 @@ let getTicketData = (PDFDataList, ticketType) => {
       const event = events.getEvent(ticketType);
       const format = event.format;
       const flags = event.flags;
-      console.log(format, flags);
       let result = [];
       for (var pdf in PDFDataList) {
         console.log(`\t Processing File ${ pdf } of ${ PDFDataList.length}`);

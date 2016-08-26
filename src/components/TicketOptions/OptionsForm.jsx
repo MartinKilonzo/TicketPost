@@ -72,7 +72,7 @@ class OptionsFormComponent extends React.Component {
             <RedactionField controlId='redact' updateForm={this.updateForm}></RedactionField>
           </FormField>
           <FormField formId={this.props.formId}>
-            <EventField style={fieldStyle}></EventField>
+            <EventField style={fieldStyle} updateForm={this.updateForm}></EventField>
           </FormField>
           <FormField formId={this.props.formId}>
             <FileField style={fieldStyle} {...PDFField} updateForm={this.updateForm}></FileField>

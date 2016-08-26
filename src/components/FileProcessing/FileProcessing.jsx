@@ -45,7 +45,6 @@ class fileProcessingComponent extends React.Component {
       toRedactOrderNumber: data.toRedactOrderNumber,
       ticketType: data.ticketType
     };
-    console.debug(newState);
     // Save the new state
     this.setState(newState, () => {
       // Change the view to hide the form and show the newly saved data
@@ -166,7 +165,7 @@ class fileProcessingComponent extends React.Component {
       this.seat = parseInt(data.seat); // Parse the seat for comparisons
       this.serial = parseInt(data.serial.replace(/\s/g, '')); // Parse the serial for comparisons, removing the space that may partition it beforehand
       this.flags = {
-        obstructedView: data.obstructedView,
+        noVideo: data.noVideo,
         firstRowOfSection: this.row === 1
           ? true
           : false
