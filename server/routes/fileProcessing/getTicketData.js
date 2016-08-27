@@ -4,19 +4,23 @@ const events = require('../events/events.js');
 
 // const DataFormats = require('./DataFormats/DataFormats');
 
-let getTicketData = (PDFDataList, ticketType) => {
+let getTicketData = (PDFDataList, ticketTypes) => {
   return new Promise((resolve, reject) => {
-    // const format = DataFormats[ticketType.venue][ticketType.ticketEvent];
+    // const format = DataFormats[ticketTypes.venue][ticketTypes.ticketEvent];
     try {
-      const event = events.getEvent(ticketType);
-      const format = event.format;
-      const flags = event.flags;
+      // SEARCH FOR DATA //
       let result = [];
       for (var pdf in PDFDataList) {
         console.log(`\t Processing File ${ pdf } of ${ PDFDataList.length}`);
         result[pdf] = [];
         let ticketSet = PDFDataList[pdf];
         for (var ticket in ticketSet) {
+          // Get format, edits and flag data from events API
+          const event = events.getEventData(ticketTypes[pdf][ticket]);
+          const format = event.eventData.format;
+          const edits = event.eventData.edits;
+          const flags = event.flags;
+          // Initialization of variables
           result[pdf][ticket] = {};
           let dataHeaders = {};
           let dataValues = {};
@@ -58,27 +62,39 @@ let getTicketData = (PDFDataList, ticketType) => {
             result[pdf][ticket][field] = matchedValue;
             if (!result[pdf]) console.log(pdf, result[pdf]);
           }
+          // END SEARCH FOR DATA //
+
+          // ADD MISC DATA //
           //Finally, check to see if any flags have been found in order to set the false flags:
           for (var flag in flags) {
             if (!result[pdf][ticket][flag]) result[pdf][ticket][flag] = false;
           }
-          // TODO: Compare headers of various sizes when no close match is found
+
+          // And, add the venue and the event data to the ticket
+          result[pdf][ticket].venue = ticketTypes[pdf][ticket].ticketVenue;
+          result[pdf][ticket].event = ticketTypes[pdf][ticket].ticketEvent;
+          // END ADD MISC DATA //
+
+          // CLEAN DATA //
+          // Apply finishing touches
+          edits(result[pdf][ticket]);
           // Check to make sure all fields have data
-          //TODO: make sure all data is formatted correctly
+          // TODO: Compare headers of various sizes when no close match is found
+          // TODO: make sure all data is formatted correctly
           for (var data in format) {
             const dataType = typeof dataValues[data][0];
             if (dataType === 'undefined' || dataType.length === 0) {
               reject({
-                message: 'Error: Cannot find: \'' + data + '.\''
+                message: 'Error: Cannot find: \'' + data + '\'.'
               });
-            }
-            else if (data === 'date') {
+            } else if (data === 'date') {
               const dateStr = result[pdf][ticket][data].slice(-3);
               if (!dateStr.match(/\s[A-Z]{2}/gi)) {
-                result[pdf][ticket][data] = result[pdf][ticket][data].slice(0,-2) + ' ' + result[pdf][ticket][data].slice(-2);
+                result[pdf][ticket][data] = result[pdf][ticket][data].slice(0, -2) + ' ' + result[pdf][ticket][data].slice(-2);
               }
             }
           }
+          // END CLEAN DATA //
         }
       }
       // result.forEach(file => {

@@ -40,7 +40,7 @@ router.get('/Events', (req, res) => {
     const events = require('./events/events.js');
     response = {
       message: 'success',
-      data: events.listEvents()
+      data: eventList.listEvents()
     };
   } catch (e) {
     response = {
@@ -50,17 +50,21 @@ router.get('/Events', (req, res) => {
   } finally {
     res.send(response);
   }
-
 });
 
 router.post('/PDFProcessing', upload.any(), (req, res) => {
-  let ticketType = JSON.parse(req.body.ticketType);
+  // let ticketType = JSON.parse(req.body.ticketType);
   console.log('Beginning File Parsing...');
   processPDF.parsePDF(req.files)
     .then(result => {
       console.log('Finished File Parsing.');
+      console.log('Searching for Ticket Types...');
+      return processPDF.getEventData(result.data);
+    })
+    .then(result => {
+      console.log('Finished Search.');
       console.log('Beginning Data Extraction...');
-      return processPDF.getData(result.data, ticketType);
+      return processPDF.getData(result.data.files, result.data.ticketTypes);
     })
     .then(data => {
       console.log('Finished Data Extraction.');

@@ -1,3 +1,4 @@
+/** Depreciated **/
 import React from 'react';
 import {DropdownButton, MenuItem, Col, FormGroup, FormControl} from 'react-bootstrap';
 

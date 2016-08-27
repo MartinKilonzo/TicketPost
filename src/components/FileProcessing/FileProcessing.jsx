@@ -9,6 +9,7 @@ import EventQuery from '../TicketUtils/EventQuery.jsx';
 // TODO: Loading bar
 // TODO: Status report
 // TODO: Seperate components for each status for more in-depth details and edits
+// TODO: Determine the missing "Name" field on world_cup_of_hockey tickets
 
 class fileProcessingComponent extends React.Component {
   constructor(props) {
@@ -87,14 +88,8 @@ class fileProcessingComponent extends React.Component {
     var l = 0;
     var r = 0;
     while (l < leftList.length && r < rightList.length) {
-      var lDate = leftList[l].date;
-      var rDate = rightList[r].date;
-      if (!lDate.charAt(lDate.length - 3).match(/\s/))
-        lDate = lDate.slice(0, -2) + ' ' + lDate.slice(-2);
-      if (!rDate.charAt(rDate.length - 3).match(/\s/))
-        rDate = rDate.slice(0, -2) + ' ' + rDate.slice(-2);
-      lDate = new Date(lDate);
-      rDate = new Date(rDate);
+      var lDate = new Date(leftList[l].date);
+      var rDate = new Date(rightList[r].date);
       if (lDate < rDate) {
         ret.push(leftList[l++]);
       } else if (lDate > rDate) {
@@ -155,10 +150,16 @@ class fileProcessingComponent extends React.Component {
    */
   createTickets(data) {
     let Ticket = function Ticket(data) {
+      // Check to make sure the date on the ticket is still valid
+      const dataDate = new Date(data.date);
+      if (dataDate <= new Date())
+        throw new Error('Cannot post tickets for events that have already occured!');
       this.file = data.file; // (Redundant, but for readability purposes)
-      //TODO:Check if date is before today and warn the user of that
+      this.venue = data.venue; // Data retrieved from API to be used to query TicketUtils
+      this.venue.name = data.venue.name.replace(/_/g, ' ');
+      this.event = data.event.replace(/_/g, ' '); // Data retrieved from API to be used to query TicketUtils
       this.dateString = data.date;
-      this.date = new Date(data.date).toISOString(); // Convert the date per ISO 8601 formatting to be used in the TicketUtils API
+      this.date = dataDate.toISOString(); // Convert the date per ISO 8601 formatting to be used in the TicketUtils API
       this.sectionNumber = parseInt(data.section); // Parse the section for comparisons
       this.section = data.section; // Save the section to be used in the TicketUtils API (Redundant, but for readability purposes)
       this.row = parseInt(data.row); // Parse the row for comparisons
@@ -198,12 +199,7 @@ class fileProcessingComponent extends React.Component {
       this.start = ticketGroup[0].seat;
       this.count = ticketGroup.length;
       this.tickets = ticketGroup;
-      this.venue = {
-        name: 'Rogers Centre',
-        country: 'CA',
-        state: 'ON',
-        city: 'Toronto'
-      };
+      this.venue = ticketGroup[0].venue;
       this.flags = {};
       ticketGroup.forEach(ticket => {
         for (var flag in ticket.flags) {

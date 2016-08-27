@@ -4,7 +4,6 @@ import Update from 'react-addons-update';
 import {Form, FormGroup, Button} from 'react-bootstrap';
 
 import FormField from './FormField.jsx';
-import EventField from './EventField.jsx';
 import RedactionField from './RedactionField.jsx';
 import FileField from './FileField.jsx';
 import colors from '../Home/colors.jsx';
@@ -70,9 +69,6 @@ class OptionsFormComponent extends React.Component {
         <Form id={this.props.formId} horizontal onSubmit={this.submitForm}>
           <FormField formId={this.props.formId}>
             <RedactionField controlId='redact' updateForm={this.updateForm}></RedactionField>
-          </FormField>
-          <FormField formId={this.props.formId}>
-            <EventField style={fieldStyle} updateForm={this.updateForm}></EventField>
           </FormField>
           <FormField formId={this.props.formId}>
             <FileField style={fieldStyle} {...PDFField} updateForm={this.updateForm}></FileField>

@@ -47,7 +47,7 @@ class TicketPostComponent extends React.Component {
       <div>
         <Button bsStyle="default" onClick={this.changeView} block>
           {!ticketPost.showMoreDetails && <div style={ticketStyle}>
-            Toronto Blue Jays<br/>
+            {ticketPost.event.Name}<br/>
             <Date date={ticketPost.date}></Date>
             Section: {ticketPost.section}<br/>
             Row: {ticketPost.row}<br/>
