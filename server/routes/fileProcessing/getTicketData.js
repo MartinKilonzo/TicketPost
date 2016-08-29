@@ -1,10 +1,9 @@
 'use strict';
 const sortData = require('./mergeSort.js');
-const events = require('../events/events.js');
 
 // const DataFormats = require('./DataFormats/DataFormats');
 
-let getTicketData = (PDFDataList, ticketTypes) => {
+let getTicketData = (PDFDataList, venueDataList) => {
   return new Promise((resolve, reject) => {
     // const format = DataFormats[ticketTypes.venue][ticketTypes.ticketEvent];
     try {
@@ -16,10 +15,9 @@ let getTicketData = (PDFDataList, ticketTypes) => {
         let ticketSet = PDFDataList[pdf];
         for (var ticket in ticketSet) {
           // Get format, edits and flag data from events API
-          const event = events.getEventData(ticketTypes[pdf][ticket]);
-          const format = event.eventData.format;
-          const edits = event.eventData.edits;
-          const flags = event.flags;
+          const format = venueDataList[pdf][ticket].venueData.format;
+          const edits = venueDataList[pdf][ticket].venueData.edits;
+          const flags = venueDataList[pdf][ticket].venueData.flags;
           // Initialization of variables
           result[pdf][ticket] = {};
           let dataHeaders = {};
@@ -71,8 +69,7 @@ let getTicketData = (PDFDataList, ticketTypes) => {
           }
 
           // And, add the venue and the event data to the ticket
-          result[pdf][ticket].venue = ticketTypes[pdf][ticket].ticketVenue;
-          result[pdf][ticket].event = ticketTypes[pdf][ticket].ticketEvent;
+          result[pdf][ticket].venue = venueDataList[pdf][ticket].venue;
           // END ADD MISC DATA //
 
           // CLEAN DATA //

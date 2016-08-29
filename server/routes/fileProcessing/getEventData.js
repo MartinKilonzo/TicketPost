@@ -1,5 +1,5 @@
 'use strict';
-const events = require('../events/events.js');
+const venueList = require('../formats/venues.js');
 
 /**
  * Method: Converts an underscore-delimited string to a space delimited string.
@@ -7,52 +7,53 @@ const events = require('../events/events.js');
  * @param {String}str             - The string to convert
  * @return {String}               - The same string delimited with spaces instead of underscores
  */
-let underscoreToString = str => {
+let underscoreToTitleCase = str => {
   if (typeof str !== 'string') throw new Error('Input must be a string');
   let ret = '';
-  for (var char of str) {
-    if (char === '_') ret += ' ';
-    else ret += char;
+  for (var i = 0; i < str.length; i++) {
+    const char = str[i];
+    if (i === 0) {  // If its the first character, capitalize it and append it
+      ret += char.toUpperCase();
+    } else if (char === '_') {  // Otherwise, if the character is an underscore, replace it with a space and append it
+      ret += ' ';
+    } else if (ret[i - 1] === ' ') {  // Otherwise, if previous character in the return string is a space, append the current character, capitalized
+      ret += char.toUpperCase();
+    } else {  // Otherwise, append the character
+      ret += char;
+    }
   }
   return ret;
 };
 
 /**
- * Main Method: Searches through the textfields of a list of pdfs to find a matching (supported) venue and event combination, to use to define the formats of future data queries of that ticket.
+ * Main Method: Searches through the textfields of a list of pdfs to find a matching (supported) venue to use to define the format/structure of future data queries of that ticket.
  *
  * @param PDFDataList[PDFData]    - An array containing JSON representations of PDFs
  */
 let findEvent = (PDFDataList) => {
   return new Promise((resolve, reject) => {
-    // Get the list of available venues and assoiated events
-    const eventList = events.listEvents();
+    // Get the list of available venues
+    const venues = venueList.venues;
     // Query each PDF in PDFDataList for an appropriate event type
-    let typeList = [];
+    let venueDataList = [];
     // Search for each tickets event
     for (var pdf in PDFDataList) {
-      typeList[pdf] = [];
+      venueDataList[pdf] = [];
       for (var page in PDFDataList[pdf]) {
         let ticket = PDFDataList[pdf][page];
 
         // Search the text to find both the venue and the event
         let ticketVenue;
-        let ticketEvent;
         var i = 0;
-        while ((typeof ticketVenue === 'undefined' || typeof ticketEvent === 'undefined') && i < ticket.length) {
+        while ((typeof ticketVenue === 'undefined') && i < ticket.length) {
           const text = decodeURIComponent(ticket[i].R[0].T);
-          if (typeof ticketVenue !== 'undefined') { // If we have a venue, search for events that belong to it
-            for (var venueEvent in ticketVenue.events) {
-              if (text.match(new RegExp(underscoreToString(venueEvent), 'ig'))) {
-                ticketEvent = venueEvent;
-                break;
-              }
-            }
-          } else { // Otherwise, find the venue first
-            for (var venue in eventList) {
-              if (text.match(new RegExp(underscoreToString(venue), 'ig'))) {
-                ticketVenue = eventList[venue];
-                break;
-              }
+          // Find the venue
+          for (var venue in venues) {
+            const venueName = underscoreToTitleCase(venue);
+            if (text.match(new RegExp(venueName, 'ig'))) {
+              ticketVenue = venues[venue];
+              ticketVenue.name = venueName;
+              break;
             }
           }
           i++;
@@ -61,19 +62,15 @@ let findEvent = (PDFDataList) => {
         if (typeof ticketVenue === 'undefined') reject({
           message: 'Cannot find ticket venue.'
         });
-        // If an event was not found, and all text results have been exhausted, reject the ticket
-        if (typeof ticketEvent === 'undefined') reject({
-          message: 'Cannot find ticket event.'
-        });
         // Remove events field:
-        let tmp = {};
+        let meta = {};
         for (var field in ticketVenue) {
-          if (field !== 'events') tmp[field] = ticketVenue[field];
+          if (field !== 'venueData') meta[field] = ticketVenue[field];
         }
         // Otherwise, add the venue and event data to the list
-        typeList[pdf][page] = ({
-          ticketVenue: tmp,
-          ticketEvent: ticketEvent
+        venueDataList[pdf][page] = ({
+          venueData: ticketVenue.venueData,
+          venue: meta
         });
       }
     }
@@ -81,7 +78,7 @@ let findEvent = (PDFDataList) => {
     resolve({
       message: 'success',
       data: {
-        ticketTypes: typeList,
+        venueData: venueDataList,
         files: PDFDataList
       }
     });

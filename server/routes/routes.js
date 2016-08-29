@@ -37,7 +37,7 @@ router.get('/', (req, res) => {
 router.get('/Events', (req, res) => {
   let response;
   try {
-    const events = require('./events/events.js');
+    const events = require('./formats/venues.js');
     response = {
       message: 'success',
       data: eventList.listEvents()
@@ -64,7 +64,7 @@ router.post('/PDFProcessing', upload.any(), (req, res) => {
     .then(result => {
       console.log('Finished Search.');
       console.log('Beginning Data Extraction...');
-      return processPDF.getData(result.data.files, result.data.ticketTypes);
+      return processPDF.getData(result.data.files, result.data.venueData);
     })
     .then(data => {
       console.log('Finished Data Extraction.');

@@ -156,8 +156,6 @@ class fileProcessingComponent extends React.Component {
         throw new Error('Cannot post tickets for events that have already occured!');
       this.file = data.file; // (Redundant, but for readability purposes)
       this.venue = data.venue; // Data retrieved from API to be used to query TicketUtils
-      this.venue.name = data.venue.name.replace(/_/g, ' ');
-      this.event = data.event.replace(/_/g, ' '); // Data retrieved from API to be used to query TicketUtils
       this.dateString = data.date;
       this.date = dataDate.toISOString(); // Convert the date per ISO 8601 formatting to be used in the TicketUtils API
       this.sectionNumber = parseInt(data.section); // Parse the section for comparisons
