@@ -1,9 +1,9 @@
 import React from 'react';
 import {Button} from 'react-bootstrap';
 
-import ResetFilter from './ResetFilter.jsx';
-import StatusFilter from './StatusFilter.jsx';
-import TicketFilter from './TicketFilter.jsx';
+import ResetFilter from './TicketGroupMenu/ResetFilter.jsx';
+import StatusFilter from './TicketGroupMenu/StatusFilter.jsx';
+import TicketFilter from './TicketGroupMenu/TicketFilter.jsx';
 
 class TicketGroupMenuComponent extends React.Component {
   constructor(props) {
