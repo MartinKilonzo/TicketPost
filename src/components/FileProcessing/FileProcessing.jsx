@@ -206,6 +206,27 @@ class fileProcessingComponent extends React.Component {
           }
         });
     };
+    let isDifferentFlags = (t1, t2) => {
+      const flags1 = t1.flags;
+      const flags2 = t2.flags;
+      // First, go through the first ticket's flags:
+      for (var flag in flags1) {
+        if (typeof flags2[flag] === 'undefined')
+          return true; // If the first ticket does not have a matching flag, then it has different flags
+        else if (flags1[flag] !== flags2[flag])
+          return true; // If the flag status does not match, then it has different flags
+        }
+      // Now, go through the second tickets flags:
+      for (var flag in flags2) {
+        if (typeof flags1[flag] === 'undefined')
+          return true; // If the first ticket does not have a matching flag, then it has different flags
+        else if (flags2[flag] !== flags1[flag])
+          return true; // If the flag status does not match, then it has different flags
+        }
+      // If it made it this far, both tickets don't have flags, or both tickets have matching flags, so they are identical
+      return false;
+    };
+
     // Group the tickets
     let ticketList = [];
     let ticketGroups = [];
@@ -229,6 +250,9 @@ class fileProcessingComponent extends React.Component {
         ticketGroups.push(new ticketGroup(ticketList)); // So add the grouping to the list of ticketGroups
         ticketList = []; // And then empty the list
       } else if (nextTicket.seat - ticket.seat !== 1) { // Otherwise if the seats are not incrementally ascending, then it marks the end of a ticket grouping
+        ticketGroups.push(new ticketGroup(ticketList)); // So add the grouping to the list of ticketGroups
+        ticketList = []; // And then empty the list
+      } else if (isDifferentFlags(ticket, nextTicket)) { // Otherwise, if the flags are different, it marks the end of a ticket grouping
         ticketGroups.push(new ticketGroup(ticketList)); // So add the grouping to the list of ticketGroups
         ticketList = []; // And then empty the list
       } // Otherwise, if it made it this far, it belongs in the same group
