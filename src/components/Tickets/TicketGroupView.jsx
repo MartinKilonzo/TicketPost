@@ -1,7 +1,5 @@
 import React from 'react';
-import {Col, Button, ButtonGroup, Row} from 'react-bootstrap';
 
-import colors from '../Home/colors.jsx';
 import PageHeader from '../Home/PageHeader.jsx';
 import TicketGroupMenu from './TicketGroupMenu.jsx'
 import ListTicketGroups from './ListTicketGroups.jsx';
