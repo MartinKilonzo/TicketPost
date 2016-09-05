@@ -17,6 +17,7 @@ class PageHeaderComponent extends React.Component {
       ['margin' + align]: '40px',
       textAlign: align,
       color: color || 'inherit',
+      backgroundColor: 'inherit',
       fontSize: '40px',
       fontWeight: 100
     };

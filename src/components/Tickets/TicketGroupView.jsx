@@ -3,6 +3,7 @@ import React from 'react';
 import PageHeader from '../Home/PageHeader.jsx';
 import TicketGroupMenu from './TicketGroupMenu.jsx'
 import ListTicketGroups from './ListTicketGroups.jsx';
+import colors from '../Home/colors.jsx';
 
 class TicketGroupView extends React.Component {
   constructor(props) {
@@ -13,7 +14,9 @@ class TicketGroupView extends React.Component {
     //TODO: Fix first ticketpost being listed last --> sort tickets client side or via API
     const styles = {
       wrapper: {
-        
+        position: 'absolute',
+        top: 0,
+        backgroundColor: colors.white
       }
     };
     return (

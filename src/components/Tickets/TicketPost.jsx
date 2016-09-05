@@ -47,11 +47,12 @@ class TicketPostComponent extends React.Component {
       ticket: {
         height: ticketWidth * widthToHeightRatio,
         width: ticketWidth,
-        border: '1px solid black',
         marginTop: '15px',
         marginBottom: '15px',
         marginLeft: '15px',
         marginRight: '15px',
+        backgroundColor: 'white',
+        boxShadow: '0px 3px 6px ' + colors.dark,
         textAlign: 'center',
         fontFamily: 'Open Sans, sans-serif'
       },
@@ -62,6 +63,7 @@ class TicketPostComponent extends React.Component {
         postion: 'relative',
         height: '60%',
         width: '100%',
+        padding: '15px 15px 15px 15px',
         fontSize: '1.25em'
       },
       actionSection: {
