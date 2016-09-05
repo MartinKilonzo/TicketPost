@@ -8,6 +8,10 @@ class StatusFilterComponent extends React.Component {
   }
   render() {
     const styles = {
+      wrapper: {
+        marginLeft: '12px',
+        marginRight: '12px'
+      },
       buttonStyle: {
         width: '33%',
         paddingTop: '10px',
@@ -17,7 +21,7 @@ class StatusFilterComponent extends React.Component {
       }
     };
     return (
-      <div>
+      <div style={styles.wrapper}>
         <div>
           <FontAwesome name="circle-o"></FontAwesome> Accepted
         </div>

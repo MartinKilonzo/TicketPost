@@ -8,9 +8,11 @@ class ListTicketGroupsComponent extends React.Component {
     super(props);
     this.state = {
       filterDate: props.filterDate,
-      filterEvent: props.filterEvent
+      filterEvent: props.filterEvent,
+      ticketGroupCount: 0
     };
     this.setFilter = this.setFilter.bind(this);
+    this.increaseCount = this.increaseCount.bind(this);
   }
   componentDidMount() {
     window.addEventListener('setTicketGroupFilter', this.setFilter);
@@ -20,31 +22,37 @@ class ListTicketGroupsComponent extends React.Component {
   }
   setFilter(event) {
     const filterData = event.detail;
+    this.setState({filterEvent: filterData.filterEvent, filterDate: filterData.filterDate, ticketGroupCount: 0});
+  }
+  increaseCount() {
     this.setState({
-      filterEvent: filterData.filterEvent,
-      filterDate: filterData.filterDate
+      ticketGroupCount: this.state.ticketGroupCount + 1
     });
   }
   render() {
     const styles = {
-      colStyle: {
-        textAlign: 'center'
+      wrapper: {
+        display: 'flex',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        paddingTop: '15px',
+        paddingBottom: '15px',
+        paddingLeft: '15px',
+        paddingRight: '15px'
       }
     };
     return (
-      <Row>
+      <div style={styles.wrapper}>
         {this.props.ticketGroups.map((ticketGroup, key) => {
           const filterEvent = this.state.filterEvent;
           const filterDate = this.state.filterDate;
           if ((filterEvent === '' && filterDate === '') || (ticketGroup.event.Name === filterEvent && ticketGroup.date === filterDate)) {
             return (
-              <Col xs={4} key={key} style={styles.colStyle}>
-                <TicketPost data={ticketGroup} key={key} saveChanges={this.props.modifyTicketPost}></TicketPost>
-              </Col>
+              <TicketPost data={ticketGroup} key={key} saveChanges={this.props.modifyTicketPost}></TicketPost>
             );
           }
         })}
-      </Row>
+      </div>
     );
   }
 }

@@ -56,14 +56,6 @@ class OptionsFormComponent extends React.Component {
       maxWidth: '750px',
       backgroundColor: 'initial'
     };
-    const fieldStyle = {
-      display: 'flex',
-      alignItems: 'center',
-      height: '100px',
-      backgroundColor: 'white',
-      boxShadow: '0px 0px 2px ' + colors.dark,
-      fontFamily: 'Roboto, sans-serif'
-    };
     return (
       <div className="container" style={containerStyle}>
         <Form id={this.props.formId} horizontal onSubmit={this.submitForm}>
@@ -71,9 +63,9 @@ class OptionsFormComponent extends React.Component {
             <RedactionField controlId='redact' updateForm={this.updateForm}></RedactionField>
           </FormField>
           <FormField formId={this.props.formId}>
-            <FileField style={fieldStyle} {...PDFField} updateForm={this.updateForm}></FileField>
+            <FileField {...PDFField} updateForm={this.updateForm}></FileField>
           </FormField>
-          <SubmitButton style={fieldStyle} submit={this.submitForm}></SubmitButton>
+          <SubmitButton submit={this.submitForm}></SubmitButton>
         </Form>
       </div>
     );
@@ -99,11 +91,13 @@ class SubmitButton extends React.Component {
     const style = event.target.style;
     style.backgroundColor = colors.white;
     style.color = colors.highlight;
+    style.boxShadow = '0px 3px 6px ' + colors.dark;
   }
   unHighlightBtn(event) {
     const style = event.target.style;
     style.backgroundColor = 'initial';
     style.color = colors.base;
+    style.boxShadow = '0px 0px 2px ' + colors.dark;
   }
   render() {
     const styles = {

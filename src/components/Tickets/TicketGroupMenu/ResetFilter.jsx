@@ -16,8 +16,13 @@ class ResetFilterComponent extends React.Component {
     window.dispatchEvent(resetFilterEvent);
   }
   render() {
+    const style = {
+      height: '40px',
+      marginLeft: '12px',
+      marginRight: '12px'
+    }
     return (
-      <Button onClick={this.resetFilter}>Show All</Button>
+      <Button style={style} onClick={this.resetFilter}>Show All</Button>
     );
   }
 }

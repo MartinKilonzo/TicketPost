@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, Popover, OverlayTrigger} from 'react-bootstrap';
 
 import PostQuery from '../TicketUtils/PostQuery.jsx';
+import colors from '../Home/colors.jsx';
 
 class PostTicketComponent extends React.Component {
   constructor(props) {
@@ -45,10 +46,17 @@ class PostTicketComponent extends React.Component {
     });
   }
   render() {
+    const style = {
+      width: '33%',
+      padding: '6px 0 6px 0',
+      border: 'none',
+      borderRadius: 0,
+      backgroundColor: colors.accent
+    };
     const overlay = <Popover id="popover-positioned-right" placement="right" title={this.state.popoverTitle}>{this.state.popoverDescription}</Popover>;
     return (
       <OverlayTrigger trigger={['hover', 'focus']} delay={200} placement="right" overlay={overlay}>
-        <Button bsStyle={this.state.status} onClick={this.postTickets} block>Post Set</Button>
+        <Button style={style} bsStyle={this.state.status} onClick={this.postTickets} block>Post Set</Button>
       </OverlayTrigger>
     );
   }

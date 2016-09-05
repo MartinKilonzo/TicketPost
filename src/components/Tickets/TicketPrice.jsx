@@ -3,6 +3,7 @@ import Update from 'react-addons-update';
 import {Button, Popover, OverlayTrigger} from 'react-bootstrap';
 
 import InventoryQuery from '../StubHub/InventoryQuery.jsx';
+import colors from '../Home/colors.jsx';
 
 class TicketPriceComponent extends React.Component {
   constructor(props) {
@@ -76,10 +77,17 @@ class TicketPriceComponent extends React.Component {
     });
   }
   render() {
+    const style = {
+      width: '33%',
+      padding: '6px 0 6px 0',
+      border: 'none',
+      borderRadius: 0,
+      backgroundColor: colors.accent
+    };
     const overlay = <Popover id="popover-positioned-right" placement="right" title={this.state.popoverTitle}>{this.state.popoverDescription}</Popover>;
     return (
       <OverlayTrigger trigger={['hover', 'focus']} delay={200} placement="right" overlay={overlay}>
-        <Button bsStyle={this.state.postStatus} onClick={this.getPrice} block>{this.state.price}</Button>
+        <Button style={style} bsStyle={this.state.postStatus} onClick={this.getPrice} block>{this.state.price}</Button>
       </OverlayTrigger>
     );
   }

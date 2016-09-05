@@ -1,12 +1,14 @@
 import React from 'react';
-import {Button} from 'react-bootstrap';
+import {DropdownButton, MenuItem} from 'react-bootstrap';
 
-import Date from '../Date.jsx';
+import DateComponent from '../Date.jsx';
 
 class TicketFilterComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      title: props.title
+    };
   }
   setFilter(ticketPost, event) {
     const setFilterEvent = new CustomEvent('setTicketGroupFilter', {
@@ -15,10 +17,19 @@ class TicketFilterComponent extends React.Component {
         filterDate: ticketPost.date
       }
     });
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    let date = new Date(ticketPost.date);
+    date = months[date.getMonth()] + ' ' + date.getDate() + ' ' + date.getFullYear();
+    this.setState({title: ticketPost.event.Name + '\n' + date});
     window.dispatchEvent(setFilterEvent);
   }
   render() {
     const styles = {
+      dropdownMenu: {
+        marginLeft: '12px',
+        marginRight: '12px',
+        whiteSpace: 'normal'
+      },
       btnGrpStyle: {
         marginBottom: '20px'
       },
@@ -27,7 +38,7 @@ class TicketFilterComponent extends React.Component {
       }
     };
     return (
-      <div>
+      <DropdownButton style={styles.dropdownMenu} title={this.state.title} id="filterByEventMenu">
         {this.props.ticketGroups.map((ticketPost, key) => {
           let comparableTicketPost;
           if (key < this.props.ticketGroups.length - 1) {
@@ -42,18 +53,20 @@ class TicketFilterComponent extends React.Component {
             // Bind the ticketPost data to the function:
             let setTicketFilter = this.setFilter.bind(this, ticketPost);
             return (
-              <Button key={key} onClick={setTicketFilter} style={styles.postGroupsButtonStyle} vertical block>
+              <MenuItem key={key} onClick={setTicketFilter} style={styles.postGroupsButtonStyle} vertical block>
                 {ticketPost.event.Name}
-                <Date date={ticketPost.date}></Date>
-              </Button>
+                <DateComponent date={ticketPost.date}></DateComponent>
+              </MenuItem>
             );
           }
         })}
-      </div>
+      </DropdownButton>
     );
   }
 }
 
-TicketFilterComponent.defaultProps = {};
+TicketFilterComponent.defaultProps = {
+  title: 'Events'
+};
 
 export default TicketFilterComponent;

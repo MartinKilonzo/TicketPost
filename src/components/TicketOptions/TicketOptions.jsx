@@ -15,7 +15,7 @@ class TicketOptions extends React.Component {
   }
   render() {
     const styles = {
-      background: {
+      wrapper: {
         position: 'absolute',
         top: 0,
         width: '100vw',
@@ -23,10 +23,8 @@ class TicketOptions extends React.Component {
       }
     };
     return (
-      <div style={styles.background}>
-        <div style={styles.header}>
-          <PageHeader color={colors.base} align="left">Upload Tickets</PageHeader>
-        </div>
+      <div style={styles.wrapper}>
+        <PageHeader color={colors.base} align="left">Upload Tickets</PageHeader>
         <OptionsForm {...this.props}/>
       </div>
     );

@@ -17,10 +17,10 @@ class FormFieldComponent extends React.Component {
       parent = parent.parentElement;
     }
     const siblings = parent.childNodes;
-    siblings.forEach((sibling) => {
-      sibling.style.boxShadow = '0px 0px 2px ' + colors.dark;
+    siblings.forEach(sibling => {
+      sibling.style.boxShadow = '0px 0px 3px ' + colors.dark;
     });
-    target.style.boxShadow = '0px 0px 4px 2px' + colors.light;
+    target.style.boxShadow = '0px 3px 6px ' + colors.dark;
 
   }
   render() {
@@ -32,7 +32,7 @@ class FormFieldComponent extends React.Component {
       margin: '0px -15px 15px -15px',
       padding: '15px 15px 15px 15px',
       backgroundColor: 'white',
-      boxShadow: '0px 0px 2px ' + colors.dark,
+      boxShadow: '0px 0px 3px ' + colors.dark,
       fontFamily: 'Roboto, sans-serif'
     };
     return (
