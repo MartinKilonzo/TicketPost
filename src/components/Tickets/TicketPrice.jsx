@@ -82,6 +82,7 @@ class TicketPriceComponent extends React.Component {
       padding: '6px 0 6px 0',
       border: 'none',
       borderRadius: 0,
+      color: colors.base,
       backgroundColor: colors.accent
     };
     const overlay = <Popover id="popover-positioned-right" placement="right" title={this.state.popoverTitle}>{this.state.popoverDescription}</Popover>;
