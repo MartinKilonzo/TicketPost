@@ -10,14 +10,14 @@ class TicketGroupSeatsComponent extends React.Component {
   render() {
     const styles = {
       single: {
-        fontSize: '1.2em'
+        fontSize: '16.8px'
       },
       many: {
-        fontSize: '0.75em',
+        fontSize: '12.6px',
         lineHeight: '1em'
       },
       seatSplitter: {
-        fontSize: '0.7em'
+        fontSize: '8.82px'
       }
     };
     return (
