@@ -1,8 +1,8 @@
 import React from 'react';
 import {Button, Popover, OverlayTrigger} from 'react-bootstrap';
 
-import PostQuery from '../TicketUtils/PostQuery.jsx';
-import colors from '../Home/colors.jsx';
+import PostQuery from '../../../TicketUtils/PostQuery.jsx';
+import colors from '../../../Home/colors.jsx';
 
 class PostTicketComponent extends React.Component {
   constructor(props) {
@@ -12,20 +12,19 @@ class PostTicketComponent extends React.Component {
     // this.postTickets();
   }
   postTickets() {
-    const state = this;
     let postQuery = new PostQuery(this.state);
-    postQuery.send().then(function success(result) {
+    postQuery.send().then(result => {
       if (result.Status === 'Failure') {
         const description = result.Messages[0].Description;
         if (description === 'Ticket Group Already Exists With Same Seats.') {
           console.warn(description);
-          state.setState({
+          this.setState({
             status: 'warning',
             popoverTitle: 'Warning',
             popoverDescription: description
           }, function callback() {
             if (typeof this.props.callback !== 'undefined') {
-              state.props.callback();
+              this.props.callback();
             }
           });
         } else {
@@ -33,16 +32,16 @@ class PostTicketComponent extends React.Component {
         }
       } else {
         console.debug(result);
-        state.setState({status: 'success', popoverTitle: 'Ticket Posted Successfully!', popoverDescription: result.Message, itemId: result.Data.Items[0][0].POItemId
+        this.setState({status: 'success', popoverTitle: 'Ticket Posted Successfully!', popoverDescription: result.Message, itemId: result.Data.Items[0][0].POItemId
         }, function callback() {
           if (typeof this.props.callback !== 'undefined') {
-            state.props.callback();
+            this.props.callback();
           }
         });
       }
-    }).catch(function error(err) {
+    }).catch(err => {
       console.error('ERROR', err);
-      state.setState({status: 'danger', popoverTitle: 'Failed to Create a Listing', popoverDescription: err.statusText.Message});
+      this.setState({status: 'danger', popoverTitle: 'Failed to Create a Listing', popoverDescription: err.statusText.Message});
     });
   }
   render() {

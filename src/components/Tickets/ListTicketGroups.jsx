@@ -1,7 +1,7 @@
 import React from 'react';
 import {Row, Col} from 'react-bootstrap';
 
-import TicketPost from './TicketPost.jsx';
+import TicketGroup from './TicketGroup.jsx';
 
 class ListTicketGroupsComponent extends React.Component {
   constructor(props) {
@@ -48,7 +48,7 @@ class ListTicketGroupsComponent extends React.Component {
           const filterDate = this.state.filterDate;
           if ((filterEvent === '' && filterDate === '') || (ticketGroup.event.Name === filterEvent && ticketGroup.date === filterDate)) {
             return (
-              <TicketPost data={ticketGroup} key={key} saveChanges={this.props.modifyTicketPost}></TicketPost>
+              <TicketGroup data={ticketGroup} key={key} saveChanges={this.props.modifyTicketGroup}></TicketGroup>
             );
           }
         })}

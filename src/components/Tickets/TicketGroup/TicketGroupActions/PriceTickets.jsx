@@ -2,8 +2,8 @@ import React from 'react';
 import Update from 'react-addons-update';
 import {Button, Popover, OverlayTrigger} from 'react-bootstrap';
 
-import InventoryQuery from '../StubHub/InventoryQuery.jsx';
-import colors from '../Home/colors.jsx';
+import InventoryQuery from '../../../StubHub/InventoryQuery.jsx';
+import colors from '../../../Home/colors.jsx';
 
 class TicketPriceComponent extends React.Component {
   constructor(props) {
@@ -14,28 +14,27 @@ class TicketPriceComponent extends React.Component {
     this.saveSectionId = this.saveSectionId.bind(this);
   }
   getPrice() {
-    const state = this;
     console.debug(this.state.eventData);
     let inventoryQuery = new InventoryQuery(this.state.eventData);
     //TODO: FIX 400 REQUESTS
-    inventoryQuery.send().then(function success(result) {
+    inventoryQuery.send().then(result => {
       const averagePrice = '$' + Math.round(result.pricingSummary.averageTicketPrice * Math.pow(10, 2)) / 100;
       console.debug(averagePrice, result);
       const listings = result.section_stats;
-      state.saveSectionId(listings);
-      state.setState({
+      this.saveSectionId(listings);
+      this.setState({
         price: averagePrice,
         postStatus: 'success',
         popoverTitle: 'Our Suggested Price',
         popoverDescription: 'Based on the current market prices found on StubHub.com, we recommend this per-ticket price.'
       }, function callback() {
         if (typeof this.props.callback !== 'undefined') {
-          state.props.callback();
+          this.props.callback();
         }
       });
-    }).catch(function error(err) {
+    }).catch(err => {
       console.error('ERROR', err);
-      state.setState({postStatus: 'danger', popoverTitle: 'Uh-Oh! We couldn\'t get a price:', popoverDescription: err.statusText});
+      this.setState({postStatus: 'danger', popoverTitle: 'Uh-Oh! We couldn\'t get a price:', popoverDescription: err.statusText});
     });
   }
   findSectionId(listings) {

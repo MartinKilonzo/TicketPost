@@ -41,7 +41,7 @@ class TicketGroupMenuComponent extends React.Component {
 }
 
 TicketGroupMenuComponent.defaultProps = {
-  ticketPosts: []
+  ticketGroups: []
 };
 
 export default TicketGroupMenuComponent;

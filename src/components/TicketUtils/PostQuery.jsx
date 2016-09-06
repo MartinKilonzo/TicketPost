@@ -8,14 +8,14 @@ let flagsToString = (flags) => {
   return str.slice(0, str.length - 1);
 }
 
-let Ticket = function Ticket(ticketPost) {
-  this.Event = ticketPost.event.Name;
-  this.EventDate = ticketPost.event.Date;
+let Ticket = function Ticket(ticketGroup) {
+  this.Event = ticketGroup.event.Name;
+  this.EventDate = ticketGroup.event.Date;
   this.Venue = 'Rogers Centre';
-  this.Section = ticketPost.section;
-  this.Row = ticketPost.row;
-  this.Quantity = ticketPost.count;
-  this.LowSeat = ticketPost.start;
+  this.Section = ticketGroup.section;
+  this.Row = ticketGroup.row;
+  this.Quantity = ticketGroup.count;
+  this.LowSeat = ticketGroup.start;
   this.TicketType = 1; //Standard = 1, Piggyback = 2 (NOT SUPPORTED VIA API), Parking = 3, Suite = 4
   this.Seating = 3; // OddEven = 1, GA = 2, Consecutive = 3
   this.Stock = 2; // eTicket = 1, StandardToeTicket = 2, , Paperless = 3, FlashSeats = 4, Mobile = 5, StandardToMobile = 6, Standard = 7
@@ -41,8 +41,8 @@ let Ticket = function Ticket(ticketPost) {
     InHandDate: '' //In Hand Date in ISO 8601 Format (Ex. 2013-0621T05:32:07) Required if InHandStatus is (1)
   };
   this.Notes = ''; // Public Note
-  console.log(ticketPost);
-  this.InternalNotes = flagsToString(ticketPost.flags); // Private Note
+  console.log(ticketGroup);
+  this.InternalNotes = flagsToString(ticketGroup.flags); // Private Note
   this.BrokerNotes = ''; // Broker Note
   this.SplitOption = 1; // Splitting options of your tickets: Any = 0, Multiples of = 1, Avoid 1 = 2, No Splits = 3
   this.Splits = 0; // Required if SplitOption is Multiples of (1)
@@ -51,7 +51,7 @@ let Ticket = function Ticket(ticketPost) {
   this.ReferenceNumber = ''; // Reference Ticket Number
 };
 
-let addVendorData = function addVendorData(TicketInventory, ticketPost) {
+let addVendorData = function addVendorData(TicketInventory, ticketGroup) {
   TicketInventory.VendorCode = 10; // Other = 0, Charged.Fm = 1, Event Inventory = 2, FanXchange = 3, GetMeIn = 4, LiveNation = 5, Razorgator = 6, SeatGeek = 7, SeatWave = 8, StubHub = 9, TicketMaster = 10, TicketsCom = 11, Ticket Technology = 12, TickPick = 13, Ticket Network = 14, TicketCity = 15, VividSeats = 16, Viagogo = 17, ZigaBid = 18, ScoreBig = 19, Out of ThisWorld Tickets = 20, MinnetonkaTickets = 21, ContenderCom=22, TicketMonster=23, RocketPoster Legacy=24, TicketMasterPlus = 26, GameTime = 27, Rukkus =28, SeatSmart = 29
   TicketInventory.Vendor = { // Either provide vendor code (above) or venor code details
     FirstName: '',
@@ -102,7 +102,7 @@ let addVendorData = function addVendorData(TicketInventory, ticketPost) {
         Amount: 0, // Payment Amount
         Currency: 'USD' // 3-Letter Currency Code
       },
-      PaymentDate: ticketPost.date, // Date of payment
+      PaymentDate: ticketGroup.date, // Date of payment
       PaymentMode: 3, // Method of Payment: PayPal = 1, eCheck = 2, Check = 3, MoneyOrder = 4, Card = 5, Cash = 6, Credit = 7, COD = 8, BankTransfer = 9, DebitCard=10, Other = 255
       PayPalEmail: '', // PayPal Email if PaymentMode = 1
       PayPalTransactionId: '', // PayPal Transactin Number if PaymentMode = 1
@@ -123,13 +123,13 @@ let addVendorData = function addVendorData(TicketInventory, ticketPost) {
 };
 
 //InventoryTickets{[Tickets], {Vendors}};
-let PostQuery = function PostQuery(ticketPost) {
+let PostQuery = function PostQuery(ticketGroup) {
 
   this.query = {
-    Tickets: [new Ticket(ticketPost)]
+    Tickets: [new Ticket(ticketGroup)]
   };
 
-  addVendorData(this.query, ticketPost);
+  addVendorData(this.query, ticketGroup);
 
   const queryProduct = '/POS/Inventory/AddTickets';
   return new TicketUtils.Query('POST', queryProduct, this.query);

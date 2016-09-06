@@ -51,10 +51,10 @@ class PDFProcessingComponent extends React.Component {
         });
       });
       //TODO: Assign each file to each set of data, keeping in mind some files contain multiple tickets
-      this.props.saveTicketData(data);
     }).catch(error => {
       console.error('Oh No!', error);
     });
+    this.props.saveTicketData(data);
   }
   testParse() {
     const fileList = this.state.files;
@@ -82,22 +82,23 @@ class PDFProcessingComponent extends React.Component {
     let pdfQuery = new PDFQuery(fileList, (response) => {
       console.log('progress?', response, this);
     });
+    let tickets = [];
     pdfQuery.send().then((result) => {
       // console.debug('From API:', result);
       //TODO: Assign each file to each set of data, keeping in mind some files contain multiple tickets
-      let data = [];
       let fileNumber = 0;
       result.data.forEach(file => {
         file.forEach(ticket => {
           ticket.file = this.state.files[fileNumber];
-          data.push(ticket);
+          tickets.push(ticket);
         });
         fileNumber++;
       });
-      // console.debug('Ticket data', data);
-      this.props.saveTicketData(data);
     }).catch((error) => {
       console.error('Oh No!', error);
+    }).then(() => { // Finally, save the ticket data
+      // console.debug('Tickets', tickets);
+      this.props.saveTicketData(tickets);
     });
   }
   render() {

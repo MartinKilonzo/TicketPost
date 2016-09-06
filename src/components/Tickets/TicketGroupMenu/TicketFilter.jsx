@@ -10,17 +10,17 @@ class TicketFilterComponent extends React.Component {
       title: props.title
     };
   }
-  setFilter(ticketPost, event) {
+  setFilter(ticketGroup, event) {
     const setFilterEvent = new CustomEvent('setTicketGroupFilter', {
       detail: {
-        filterEvent: ticketPost.event.Name,
-        filterDate: ticketPost.date
+        filterEvent: ticketGroup.event.Name,
+        filterDate: ticketGroup.date
       }
     });
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    let date = new Date(ticketPost.date);
+    let date = new Date(ticketGroup.date);
     date = months[date.getMonth()] + ' ' + date.getDate() + ' ' + date.getFullYear();
-    this.setState({title: ticketPost.event.Name + '\n' + date});
+    this.setState({title: ticketGroup.event.Name + '\n' + date});
     window.dispatchEvent(setFilterEvent);
   }
   render() {
@@ -39,23 +39,23 @@ class TicketFilterComponent extends React.Component {
     };
     return (
       <DropdownButton style={styles.dropdownMenu} title={this.state.title} id="filterByEventMenu">
-        {this.props.ticketGroups.map((ticketPost, key) => {
-          let comparableTicketPost;
+        {this.props.ticketGroups.map((ticketGroup, key) => {
+          let comparableticketGroup;
           if (key < this.props.ticketGroups.length - 1) {
             // If this element is the last element (or only), compare it to the previous element instead of the next one
-            comparableTicketPost = this.props.ticketGroups[key + 1];
+            comparableticketGroup = this.props.ticketGroups[key + 1];
           } else {
             // To prevent index out of bounds error
-            comparableTicketPost = this.props.ticketGroups[key - 1];
+            comparableticketGroup = this.props.ticketGroups[key - 1];
           }
-          // If its the last ticketPost, or one in the list and the date or the event doesnt match the next ticketPost, create a filter for this grouping of ticketGroups:
-          if (key === this.props.ticketGroups.length - 1 || ticketPost.date !== comparableTicketPost.date || ticketPost.event.Name !== comparableTicketPost.event.Name) {
-            // Bind the ticketPost data to the function:
-            let setTicketFilter = this.setFilter.bind(this, ticketPost);
+          // If its the last ticketGroup, or one in the list and the date or the event doesnt match the next ticketGroup, create a filter for this grouping of ticketGroups:
+          if (key === this.props.ticketGroups.length - 1 || ticketGroup.date !== comparableticketGroup.date || ticketGroup.event.Name !== comparableticketGroup.event.Name) {
+            // Bind the ticketGroup data to the function:
+            let setTicketFilter = this.setFilter.bind(this, ticketGroup);
             return (
               <MenuItem key={key} onClick={setTicketFilter} style={styles.postGroupsButtonStyle} vertical block>
-                {ticketPost.event.Name}
-                <DateComponent date={ticketPost.date}></DateComponent>
+                {ticketGroup.event.Name}
+                <DateComponent date={ticketGroup.date}></DateComponent>
               </MenuItem>
             );
           }

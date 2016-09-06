@@ -1,8 +1,8 @@
 import React from 'react';
 import {Button, Popover, OverlayTrigger} from 'react-bootstrap';
 
-import FileQuery from '../TicketUtils/FileQuery.jsx';
-import colors from '../Home/colors.jsx';
+import FileQuery from '../../../TicketUtils/FileQuery.jsx';
+import colors from '../../../Home/colors.jsx';
 
 class UploadTicketComponent extends React.Component {
   constructor(props) {
@@ -11,11 +11,10 @@ class UploadTicketComponent extends React.Component {
     this.uploadTickets = this.uploadTickets.bind(this);
   }
   uploadTickets() {
-    const state = this;
-    const ticketPost = this.state;
+    const ticketGroup = this.state;
     console.debug(this.state);
     let promises = [];
-    ticketPost.tickets.forEach(function loadFile(ticket) {
+    ticketGroup.tickets.forEach(ticket => {
       promises.push(new Promise(function(resolve, reject) {
         let fileReader = new FileReader();
         fileReader.readAsDataURL(ticket.file);
@@ -27,29 +26,29 @@ class UploadTicketComponent extends React.Component {
         }
       }));
     });
-    Promise.all(promises).then(function success(results) {
+    Promise.all(promises).then(results => {
       let files = [];
       results.forEach(function uploadFile(file, key) {
         files.push({
-          Seat: ticketPost.tickets[key].seat.toString(),
+          Seat: ticketGroup.tickets[key].seat.toString(),
           File: file.slice('data:application/pdf;base64,'.length)
         });
       });
-      let fileQuery = new FileQuery(ticketPost.itemId, files);
+      let fileQuery = new FileQuery(ticketGroup.itemId, files);
       return fileQuery.send();
     }).then(function success(result) {
       console.debug(result);
       const description = result.Messages[0].Description;
-      state.setState({
+      this.setState({
         status: 'success',
         popoverTitle: 'Ticket Uploaded Successfully!',
         popoverDescription: description
       }, function callback() {
         this.props.callback();
       });
-    }).catch(function error(err) {
+    }).catch(err => {
       console.error('ERROR', err);
-      state.setState({status: 'danger', popoverTitle: 'Failed to Upload', popoverDescription: err.statusText.Message});
+      this.setState({status: 'danger', popoverTitle: 'Failed to Upload', popoverDescription: err.statusText.Message});
       //TODO: Alert the user outside of the console, perhaps popovers
     });
   }

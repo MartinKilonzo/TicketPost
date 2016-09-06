@@ -268,6 +268,10 @@ class fileProcessingComponent extends React.Component {
       results.forEach(function saveEvent(result, key) {
         ticketGroups[key].event = result.Items[0];
       });
+    }).catch(function error(err) {
+      console.error('ERROR', err);
+      //TODO: Alert user about error (color ticketGroup red); create error components for ticketGroup and use those (dimmed with error message)
+    }).then(() => { // Finally:
       console.log(ticketGroups);
       this.setState({
         ticketGroups: ticketGroups
@@ -275,9 +279,6 @@ class fileProcessingComponent extends React.Component {
         // Change the view to hide the form and show the newly created ticket groups
         this.setState({showForm: false, showPDFFileProcessing: false, showTickets: true});
       }); // Save the newly generated ticketGroups to the state
-    }).catch(function error(err) {
-      console.error('ERROR', err);
-      //TODO: Alert user about error (color ticketGroup red); create error components for ticketGroup and use those (dimmed with error message)
     });
   }
   /**

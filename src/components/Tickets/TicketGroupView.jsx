@@ -11,7 +11,7 @@ class TicketGroupView extends React.Component {
     this.state = {};
   }
   render() {
-    //TODO: Fix first ticketpost being listed last --> sort tickets client side or via API
+    //TODO: Fix first ticketGroup being listed last --> sort tickets client side or via API
     const styles = {
       wrapper: {
         position: 'absolute',

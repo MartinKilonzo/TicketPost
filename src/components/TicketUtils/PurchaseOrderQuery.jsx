@@ -1,10 +1,10 @@
 import TicketUtils from './TicketUtils.jsx';
-let PurchaseOrderQuery = function PurchaseOrderQuery(ticketPost) {
+let PurchaseOrderQuery = function PurchaseOrderQuery(ticketGroup) {
   this.query = {
-    POId: ticketPost.poId, // PurchaseOrder Id
+    POId: ticketGroup.poId, // PurchaseOrder Id
     PaymentModeId: '', // Either Provide Existing PaymentModeId or Provide Payment Details
     Amount: {
-      Amount: ticketPost.count * 100, // Payment Amount
+      Amount: ticketGroup.count * 100, // Payment Amount
       Currency: 'USD' // 3 Letter ISO 4217 Currency Code Ex: USD, GBP, AUD
     },
     PaymentDate: '', // Payment Date in ISO 8601 Format (Ex. 2013-0621T05:32:07)
