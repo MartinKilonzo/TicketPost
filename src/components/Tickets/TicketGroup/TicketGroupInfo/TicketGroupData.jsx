@@ -9,6 +9,7 @@ class TicketGroupDataComponent extends React.Component {
     const style = {
       display: 'flex',
       justifyContent: 'center',
+      alignSelf: this.props.count > 1 ? 'center' : 'baseline',
       width: '33%'
     };
     return (

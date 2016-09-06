@@ -61,9 +61,9 @@ class UploadTicketComponent extends React.Component {
       color: colors.base,
       backgroundColor: colors.accent
     };
-    const overlay = <Popover id="popover-positioned-right" placement="right" title={this.state.popoverTitle}>{this.state.popoverDescription}</Popover>;
+    const overlay = <Popover id="popover-positioned-top" placement="top" title={this.state.popoverTitle}>{this.state.popoverDescription}</Popover>;
     return (
-      <OverlayTrigger trigger={['hover', 'focus']} delay={200} placement="right" overlay={overlay}>
+      <OverlayTrigger trigger={['hover', 'focus']} delay={200} placement="top" overlay={overlay}>
         <Button style={style} bsStyle={this.state.status} onClick={this.uploadTickets} block>Upload Set</Button>
       </OverlayTrigger>
     );

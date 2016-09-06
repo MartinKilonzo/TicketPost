@@ -61,8 +61,8 @@ class TicketGroupInfoComponent extends React.Component {
         <div style={styles.ticketInfo}>
           <div style={styles.ticketInfoWrapper}>
             <div style={styles.infoWrapper}>
-              <TicketGroupData>{this.props.section}</TicketGroupData>
-              <TicketGroupData>{this.props.row}</TicketGroupData>
+              <TicketGroupData {...this.props} >{this.props.section}</TicketGroupData>
+              <TicketGroupData {...this.props} >{this.props.row}</TicketGroupData>
               <TicketGroupSeats {...this.props}></TicketGroupSeats>
             </div>
             <div style={styles.labelWrapper}>
